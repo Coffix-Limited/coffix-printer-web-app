@@ -1,68 +1,119 @@
 "use client"
 
-import { useState } from "react";
-import { Save, FileText } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Save, FileText, ArrowLeft } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { COFFEE_PALETTE } from "@/app/constants/theme";
-import { TextStyle, SectionStyles } from "../interface/Template";
+import { LineDecoration, LineStyle, LineAlignment } from "@/app/templates/interface/LineDecoration";
+import { useTemplateStore } from "@/app/templates/store/useTemplateStore";
 
-const SAMPLE_RECEIPT = {
-  header: ["COFFEE SHOP", "123 Main Street, Auckland"],
-  metadata: ["Order #12345", "Date: 28 Jan 2026", "Cashier: John"],
-  itemRow: ["2x Flat White - $8.00", "1x Long Black - $4.50", "1x Cappuccino - $5.00"],
-  totals: ["Subtotal: $17.50", "Tax (15%): $2.63", "Total: $20.13"],
-  footer: ["Thank you!", "Visit us again", "www.coffeeshop.com"]
+const SAMPLE_LINES = [
+  "COFFEE SHOP",
+  "123 Main Street, Auckland",
+  "Order #12345",
+  "Date: 28 Jan 2026",
+  "Cashier: John",
+  "2x Flat White - $8.00",
+  "1x Long Black - $4.50",
+  "1x Cappuccino - $5.00",
+  "Subtotal: $17.50",
+  "Tax (15%): $2.63",
+  "Total: $20.13",
+  "Thank you!",
+  "Visit us again",
+  "www.coffeeshop.com",
+  "Scan QR for feedback"
+];
+
+const DEFAULT_LINE: LineStyle = {
+  fontSize: 14,
+  alignment: LineAlignment.LEFT,
+  isBold: false
 };
 
-const SECTION_LABELS: Record<keyof SectionStyles, { label: string; description: string }> = {
-  header: { label: "Header", description: "Store name and address" },
-  metadata: { label: "Metadata", description: "Order #, date, cashier" },
-  itemRow: { label: "Item Row", description: "Product items purchased" },
-  totals: { label: "Totals", description: "Subtotal, tax, grand total" },
-  footer: { label: "Footer", description: "Thank you message, QR codes" }
-};
+export default function TemplateDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const templateId = params.templateId as string;
+  const { getTemplate, saveTemplate } = useTemplateStore();
 
-export default function TemplatesPage() {
-  const [sections, setSections] = useState<SectionStyles>({
-    header: { fontSize: 24, alignment: "center", isBold: true },
-    metadata: { fontSize: 12, alignment: "left", isBold: false },
-    itemRow: { fontSize: 14, alignment: "left", isBold: false },
-    totals: { fontSize: 16, alignment: "right", isBold: true },
-    footer: { fontSize: 12, alignment: "center", isBold: false }
-  });
-
-  const [selectedSection, setSelectedSection] = useState<keyof SectionStyles | null>("header");
+  const [lines, setLines] = useState<LineStyle[]>(
+    Array(15).fill(null).map(() => ({ ...DEFAULT_LINE }))
+  );
+  const [selectedLine, setSelectedLine] = useState<number>(0);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleUpdateSection = (section: keyof SectionStyles, updates: Partial<TextStyle>) => {
-    setSections(prev => ({
-      ...prev,
-      [section]: { ...prev[section], ...updates }
-    }));
+  useEffect(() => {
+    const loadTemplate = async () => {
+      if (templateId !== 'new') {
+        const template = await getTemplate(templateId);
+        if (template && template.lines) {
+          setLines(template.lines);
+        }
+      }
+      setLoading(false);
+    };
+    loadTemplate();
+  }, [templateId, getTemplate]);
+
+  const handleUpdateLine = (lineIndex: number, updates: Partial<LineStyle>) => {
+    setLines(prev => prev.map((line, idx) =>
+      idx === lineIndex ? { ...line, ...updates } : line
+    ));
   };
 
   const handleSave = async () => {
     setSaving(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setSaving(false);
-    alert("Template saved successfully!");
+    try {
+      const template: LineDecoration = {
+        id: templateId === 'new' ? Date.now().toString() : templateId,
+        lines: lines
+      };
+      await saveTemplate(template);
+      router.push('/templates');
+    } catch (error) {
+      console.error('Failed to save template:', error);
+      alert('Failed to save template');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const getStyleFromTextStyle = (textStyle: TextStyle) => {
+  const getStyleFromLineStyle = (lineStyle: LineStyle) => {
     return {
-      fontSize: `${textStyle.fontSize}px`,
-      textAlign: textStyle.alignment as "left" | "center" | "right",
-      fontWeight: textStyle.isBold ? 'bold' as const : 'normal' as const
+      fontSize: `${lineStyle.fontSize}px`,
+      textAlign: lineStyle.alignment as "left" | "center" | "right",
+      fontWeight: lineStyle.isBold ? 'bold' as const : 'normal' as const
     };
   };
+
+  if (loading) {
+    return (
+      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+        <div className="flex items-center justify-center py-20">
+          <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>Loading template...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
       <div className="mb-6 md:mb-8">
+        <button
+          onClick={() => router.push('/templates')}
+          className="flex items-center gap-2 mb-4 text-sm hover:opacity-70 transition-opacity"
+          style={{ color: COFFEE_PALETTE.primary }}
+        >
+          <ArrowLeft size={16} />
+          Back to Templates
+        </button>
         <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
-          Receipt Template
+          {templateId === 'new' ? 'Create New Template' : 'Edit Template'}
         </h2>
         <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
-          Configure section styles for receipt printing • 5 sections
+          Configure line styles for receipt printing • 15 lines
         </p>
       </div>
 
@@ -70,96 +121,99 @@ export default function TemplatesPage() {
         <div className="lg:col-span-1 space-y-4">
           <div className="p-6 rounded-lg shadow-sm border" style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
             <h3 className="text-lg font-semibold mb-4" style={{ color: COFFEE_PALETTE.textPrimary }}>
-              Receipt Sections
+              Receipt Lines
             </h3>
 
-            <div className="space-y-2">
-              {(Object.keys(sections) as Array<keyof SectionStyles>).map((section) => (
+            <div className="space-y-2 max-h-[400px] overflow-y-auto">
+              {lines.map((line, index) => (
                 <div
-                  key={section}
-                  onClick={() => setSelectedSection(section)}
+                  key={index}
+                  onClick={() => setSelectedLine(index)}
                   className="p-3 rounded-md border cursor-pointer transition-all"
                   style={{
-                    backgroundColor: selectedSection === section ? COFFEE_PALETTE.background : COFFEE_PALETTE.cardBg,
-                    borderColor: selectedSection === section ? COFFEE_PALETTE.primary : COFFEE_PALETTE.border,
-                    borderWidth: selectedSection === section ? '2px' : '1px'
+                    backgroundColor: selectedLine === index ? COFFEE_PALETTE.background : COFFEE_PALETTE.cardBg,
+                    borderColor: selectedLine === index ? COFFEE_PALETTE.primary : COFFEE_PALETTE.border,
+                    borderWidth: selectedLine === index ? '2px' : '1px'
                   }}
                 >
-                  <div className="mb-2">
-                    <span className="text-sm font-medium capitalize" style={{ color: COFFEE_PALETTE.textPrimary }}>
-                      {SECTION_LABELS[section].label}
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                      Line {index + 1}
+                    </span>
+                    <span className="text-xs px-2 py-0.5 rounded" style={{
+                      backgroundColor: COFFEE_PALETTE.background,
+                      color: COFFEE_PALETTE.textSecondary
+                    }}>
+                      {line.fontSize}px
                     </span>
                   </div>
-                  
-                  <div className="text-xs space-y-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                    <p>{SECTION_LABELS[section].description}</p>
-                    <p>Size: {sections[section].fontSize}px • {sections[section].alignment} • {sections[section].isBold ? 'Bold' : 'Normal'}</p>
+
+                  <div className="text-xs" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                    {line.alignment} • {line.isBold ? 'Bold' : 'Normal'}
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {selectedSection && (
-            <div className="p-6 rounded-lg shadow-sm border" style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
-              <h3 className="text-lg font-semibold mb-4 capitalize" style={{ color: COFFEE_PALETTE.textPrimary }}>
-                Edit {SECTION_LABELS[selectedSection].label}
-              </h3>
+          <div className="p-6 rounded-lg shadow-sm border" style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
+            <h3 className="text-lg font-semibold mb-4" style={{ color: COFFEE_PALETTE.textPrimary }}>
+              Edit Line {selectedLine + 1}
+            </h3>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
-                    Font Size: {sections[selectedSection].fontSize}px
-                  </label>
-                  <input
-                    type="range"
-                    min="8"
-                    max="48"
-                    value={sections[selectedSection].fontSize}
-                    onChange={(e) => handleUpdateSection(selectedSection, { fontSize: parseInt(e.target.value) })}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-xs mt-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                    <span>8px</span>
-                    <span>48px</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
-                    Alignment
-                  </label>
-                  <select
-                    value={sections[selectedSection].alignment}
-                    onChange={(e) => handleUpdateSection(selectedSection, { alignment: e.target.value as 'left' | 'center' | 'right' })}
-                    className="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2"
-                    style={{ 
-                      borderColor: COFFEE_PALETTE.border,
-                      color: COFFEE_PALETTE.textPrimary
-                    }}
-                  >
-                    <option value="left">Left</option>
-                    <option value="center">Center</option>
-                    <option value="right">Right</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={sections[selectedSection].isBold}
-                      onChange={(e) => handleUpdateSection(selectedSection, { isBold: e.target.checked })}
-                      className="w-4 h-4 rounded"
-                    />
-                    <span className="text-sm font-medium" style={{ color: COFFEE_PALETTE.textPrimary }}>
-                      Bold Text
-                    </span>
-                  </label>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                  Font Size: {lines[selectedLine].fontSize}px
+                </label>
+                <input
+                  type="range"
+                  min="8"
+                  max="48"
+                  value={lines[selectedLine].fontSize}
+                  onChange={(e) => handleUpdateLine(selectedLine, { fontSize: parseInt(e.target.value) })}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs mt-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                  <span>8px</span>
+                  <span>48px</span>
                 </div>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                  Alignment
+                </label>
+                <select
+                  value={lines[selectedLine].alignment}
+                  onChange={(e) => handleUpdateLine(selectedLine, { alignment: e.target.value as LineAlignment })}
+                  className="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2"
+                  style={{
+                    borderColor: COFFEE_PALETTE.border,
+                    color: COFFEE_PALETTE.textPrimary
+                  }}
+                >
+                  <option value={LineAlignment.LEFT}>Left</option>
+                  <option value={LineAlignment.CENTER}>Center</option>
+                  <option value={LineAlignment.RIGHT}>Right</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={lines[selectedLine].isBold}
+                    onChange={(e) => handleUpdateLine(selectedLine, { isBold: e.target.checked })}
+                    className="w-4 h-4 rounded"
+                  />
+                  <span className="text-sm font-medium" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                    Bold Text
+                  </span>
+                </label>
+              </div>
             </div>
-          )}
+          </div>
 
           <button
             onClick={handleSave}
@@ -190,31 +244,27 @@ export default function TemplatesPage() {
               </h3>
             </div>
 
-            <div 
+            <div
               className="rounded-lg border-2 p-8 font-mono bg-white min-h-[600px]"
               style={{ borderColor: COFFEE_PALETTE.border }}
             >
-              {(Object.keys(SAMPLE_RECEIPT) as Array<keyof typeof SAMPLE_RECEIPT>).map((section) => (
+              {SAMPLE_LINES.map((text, index) => (
                 <div
-                  key={section}
-                  onClick={() => setSelectedSection(section)}
-                  className="mb-4 cursor-pointer hover:bg-yellow-50 transition-colors px-2 py-2 rounded"
+                  key={index}
+                  onClick={() => setSelectedLine(index)}
+                  className="cursor-pointer hover:bg-yellow-50 transition-colors px-2 py-1 rounded mb-1"
                   style={{
-                    backgroundColor: selectedSection === section ? '#FEF3C7' : 'transparent'
+                    backgroundColor: selectedLine === index ? '#FEF3C7' : 'transparent'
                   }}
                 >
-                  {SAMPLE_RECEIPT[section].map((line, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        ...getStyleFromTextStyle(sections[section]),
-                        color: COFFEE_PALETTE.textPrimary,
-                        marginBottom: '4px'
-                      }}
-                    >
-                      {line}
-                    </div>
-                  ))}
+                  <div
+                    style={{
+                      ...getStyleFromLineStyle(lines[index]),
+                      color: COFFEE_PALETTE.textPrimary
+                    }}
+                  >
+                    {text}
+                  </div>
                 </div>
               ))}
             </div>
@@ -224,9 +274,9 @@ export default function TemplatesPage() {
                 Preview Notes:
               </p>
               <ul className="text-xs space-y-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                <li>• Click on any section to edit its style</li>
-                <li>• All lines in a section share the same style</li>
-                <li>• Highlighted section indicates current selection</li>
+                <li>• Click on any line to edit its style</li>
+                <li>• Each line can have independent styling</li>
+                <li>• Highlighted line indicates current selection</li>
                 <li>• Changes are reflected in real-time</li>
               </ul>
             </div>

@@ -1,247 +1,211 @@
-  "use client"
+"use client"
 
-  import { useEffect, useState } from "react";
-  import { useRouter } from "next/navigation";
-  import { useTemplateStore } from "./store/useTemplateStore";
-  import { COFFEE_PALETTE } from "../constants/theme";
-  import { Plus, Trash2, FileText, AlertCircle, Activity } from "lucide-react";
-  import { TemplateService } from "./service/template_service";
-  import { TextStyle } from "./interface/Template";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTemplateStore } from "./store/useTemplateStore";
+import { COFFEE_PALETTE } from "../constants/theme";
+import { Plus, Trash2, FileText, AlertCircle, Activity, Edit } from "lucide-react";
+import { LineAlignment } from "./interface/LineDecoration";
 
-  type ReceiptSection = 'header' | 'metadata' | 'itemRow' | 'totals' | 'footer';
+const SAMPLE_LINES = [
+  "COFFEE SHOP",
+  "123 Main Street",
+  "Order #12345",
+  "Date: 28 Jan 2026",
+  "Cashier: John",
+  "2x Flat White - $8.00",
+  "1x Long Black - $4.50",
+  "1x Cappuccino - $5.00",
+  "Subtotal: $17.50",
+  "Tax (15%): $2.63",
+  "Total: $20.13",
+  "Thank you!",
+  "Visit us again",
+  "www.coffeeshop.com",
+  "Scan QR for feedback"
+];
 
-  interface ReceiptLine {
-    text: string;
-    section: ReceiptSection;
-  }
+export default function TemplatesPage() {
+  const router = useRouter();
+  const { lineDecorations, setLineDecorations, loading, error, deleteTemplate } = useTemplateStore();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const SAMPLE_RECEIPT: ReceiptLine[] = [
-    { text: "COFFEE SHOP", section: 'header' },
-    { text: "123 Main Street, Auckland", section: 'header' },
-    { text: "", section: 'header' },
-    { text: "Order #12345", section: 'metadata' },
-    { text: "Date: 28/01/2026 2:45 PM", section: 'metadata' },
-    { text: "Cashier: Emma", section: 'metadata' },
-    { text: "------------------------", section: 'metadata' },
-    { text: "2x Flat White         $9.00", section: 'itemRow' },
-    { text: "1x Long Black         $4.50", section: 'itemRow' },
-    { text: "1x Cappuccino         $5.00", section: 'itemRow' },
-    { text: "------------------------", section: 'totals' },
-    { text: "Subtotal:           $18.50", section: 'totals' },
-    { text: "Tax (GST 15%):       $2.78", section: 'totals' },
-    { text: "Total:              $21.28", section: 'totals' },
-    { text: "", section: 'footer' },
-    { text: "Thank you for your visit!", section: 'footer' },
-    { text: "Visit us again soon", section: 'footer' },
-    { text: "www.coffeeshop.com", section: 'footer' }
-  ];
+  useEffect(() => {
+    setLineDecorations();
+  }, [setLineDecorations]);
 
-  export default function TemplatesPage() {
-    const router = useRouter();
-    const { templates, setTemplates, loading, error, deleteTemplate } = useTemplateStore();
-    const [deletingId, setDeletingId] = useState<string | null>(null);
-    const [creatingTemplate, setCreatingTemplate] = useState(false);
+  const handleCreateTemplate = async () => {
+    router.push('/templates/new');
+  };
 
-    useEffect(() => {
-      setTemplates();
-    }, [setTemplates]);
+  const handleDeleteTemplate = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this template?')) return;
 
-    const handleCreateTemplate = async () => {
-      const templateName = prompt("Enter template name:");
-      if (!templateName) return;
+    setDeletingId(id);
+    try {
+      await deleteTemplate(id);
+    } catch (error) {
+      console.error("Failed to delete template:", error);
+      alert("Failed to delete template");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
-      setCreatingTemplate(true);
-      try {
-        const newTemplateId = await TemplateService.createTemplate(templateName.trim());
-        router.push(`/templates/${newTemplateId}`);
-      } catch (error) {
-        console.error("Failed to create template:", error);
-        alert("Failed to create template");
-      } finally {
-        setCreatingTemplate(false);
-      }
+  const getLineStyle = (lineStyle: { fontSize: number; alignment: LineAlignment; isBold: boolean }) => {
+    return {
+      fontSize: `${lineStyle.fontSize}px`,
+      textAlign: lineStyle.alignment as "left" | "center" | "right",
+      fontWeight: lineStyle.isBold ? 'bold' as const : 'normal' as const,
+      lineHeight: '1.2'
     };
+  };
 
-    const handleDeleteTemplate = async (id: string, name: string) => {
-      if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
+  return (
+    <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+      <div className="mb-6 md:mb-8 flex items-center justify-between">
+        <div>
+          <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
+            Receipt Templates
+          </h2>
+          <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
+            Manage and configure receipt printing templates • {lineDecorations.length} template{lineDecorations.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+        <button
+          onClick={handleCreateTemplate}
+          className="px-4 py-2 rounded-md font-medium text-white transition-opacity hover:opacity-90 flex items-center gap-2"
+          style={{ backgroundColor: COFFEE_PALETTE.primary }}
+        >
+          <Plus size={18} />
+          <span className="hidden sm:inline">New Template</span>
+        </button>
+      </div>
 
-      setDeletingId(id);
-      try {
-        await deleteTemplate(id);
-      } catch (error) {
-        console.error("Failed to delete template:", error);
-        alert("Failed to delete template");
-      } finally {
-        setDeletingId(null);
-      }
-    };
-
-    const getSectionStyle = (section: ReceiptSection, templateId: string) => {
-      const template = templates.find(t => t.id === templateId);
-      const textStyle: TextStyle = template?.sections[section] || {
-        fontSize: 12,
-        alignment: 'left',
-        isBold: false
-      };
-
-      return {
-        fontSize: `${textStyle.fontSize * 0.05 + 0.4}rem`,
-        textAlign: textStyle.alignment as "left" | "center" | "right",
-        fontWeight: textStyle.isBold ? 'bold' as const : 'normal' as const
-      };
-    };
-
-    return (
-      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-        <div className="mb-6 md:mb-8 flex items-center justify-between">
+      {error && (
+        <div className="mb-6 p-4 rounded-lg border flex items-start gap-3"
+          style={{ backgroundColor: COFFEE_PALETTE.warningBg, borderColor: COFFEE_PALETTE.error }}>
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: COFFEE_PALETTE.error }} />
           <div>
-            <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
-              Receipt Templates
-            </h2>
-            <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
-              Manage and configure receipt printing templates • {templates.length} template{templates.length !== 1 ? 's' : ''}
-            </p>
+            <h4 className="font-semibold text-sm mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
+              Firebase Connection Error
+            </h4>
+            <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>{error}</p>
           </div>
+        </div>
+      )}
+
+      {loading && (
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <Activity className="w-8 h-8 mx-auto mb-2 animate-spin" style={{ color: COFFEE_PALETTE.primary }} />
+            <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>Loading templates...</p>
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && lineDecorations.length === 0 && (
+        <div className="p-12 rounded-lg border-2 border-dashed text-center"
+          style={{ borderColor: COFFEE_PALETTE.border }}>
+          <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" style={{ color: COFFEE_PALETTE.textSecondary }} />
+          <h3 className="text-lg font-semibold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
+            No Templates Found
+          </h3>
+          <p className="text-sm mb-4" style={{ color: COFFEE_PALETTE.textSecondary }}>
+            Create your first receipt template to get started
+          </p>
           <button
             onClick={handleCreateTemplate}
-            disabled={creatingTemplate}
-            className="px-4 py-2 rounded-md font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
+            className="px-6 py-2 rounded-md font-medium text-white transition-opacity hover:opacity-90"
             style={{ backgroundColor: COFFEE_PALETTE.primary }}
           >
-            {creatingTemplate ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span className="hidden sm:inline">Creating...</span>
-              </>
-            ) : (
-              <>
-                <Plus size={18} />
-                <span className="hidden sm:inline">New Template</span>
-              </>
-            )}
+            Create Template
           </button>
         </div>
+      )}
 
-        {error && (
-          <div className="mb-6 p-4 rounded-lg border flex items-start gap-3"
-            style={{ backgroundColor: COFFEE_PALETTE.warningBg, borderColor: COFFEE_PALETTE.error }}>
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: COFFEE_PALETTE.error }} />
-            <div>
-              <h4 className="font-semibold text-sm mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
-                Firebase Connection Error
-              </h4>
-              <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>{error}</p>
-            </div>
-          </div>
-        )}
-
-        {loading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <Activity className="w-8 h-8 mx-auto mb-2 animate-spin" style={{ color: COFFEE_PALETTE.primary }} />
-              <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>Loading templates...</p>
-            </div>
-          </div>
-        )}
-
-        {!loading && !error && templates.length === 0 && (
-          <div className="p-12 rounded-lg border-2 border-dashed text-center"
-            style={{ borderColor: COFFEE_PALETTE.border }}>
-            <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" style={{ color: COFFEE_PALETTE.textSecondary }} />
-            <h3 className="text-lg font-semibold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
-              No Templates Found
-            </h3>
-            <p className="text-sm mb-4" style={{ color: COFFEE_PALETTE.textSecondary }}>
-              Create your first receipt template to get started
-            </p>
-            <button
-              onClick={handleCreateTemplate}
-              className="px-6 py-2 rounded-md font-medium text-white transition-opacity hover:opacity-90"
-              style={{ backgroundColor: COFFEE_PALETTE.primary }}
+      {!loading && !error && lineDecorations.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {lineDecorations.map((lineDecoration) => (
+            <div
+              key={lineDecoration.id}
+              className="rounded-lg shadow-sm border overflow-hidden transition-all hover:shadow-md"
+              style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}
             >
-              Create Template
-            </button>
-          </div>
-        )}
-
-        {!loading && !error && templates.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {templates.map((template) => (
-              <div
-                key={template.id}
-                className="rounded-lg shadow-sm border overflow-hidden transition-all hover:shadow-md"
-                style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}
-              >
-                <div
-                  onClick={() => router.push(`/templates/${template.id}`)}
-                  className="cursor-pointer"
-                >
-                  <div className="p-4 border-b" style={{ borderColor: COFFEE_PALETTE.border }}>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg" style={{ color: COFFEE_PALETTE.textPrimary }}>
-                          {template.name}
-                        </h3>
-                      </div>
-                    </div>
+              <div className="p-4 border-b" style={{ borderColor: COFFEE_PALETTE.border }}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-5 h-5" style={{ color: COFFEE_PALETTE.primary }} />
+                    <h3 className="font-semibold text-base" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                      Template {lineDecoration.id.slice(0, 8)}
+                    </h3>
                   </div>
-
-                  <div
-                    className="p-4 bg-white font-mono overflow-hidden"
-                    style={{ height: '360px' }}
-                  >
-                    <div className="leading-tight">
-                      {SAMPLE_RECEIPT.map((line, index) => {
-                        const style = getSectionStyle(line.section, template.id);
-
-                        return (
-                          <div
-                            key={index}
-                            style={{
-                              ...style,
-                              color: COFFEE_PALETTE.textPrimary,
-                              marginBottom: '0.15rem',
-                              minHeight: '0.9rem',
-                              whiteSpace: 'pre-wrap'
-                            }}
-                          >
-                            {line.text || <span style={{ opacity: 0.2 }}>-</span>}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-3 border-t flex items-center justify-between"
-                  style={{ borderColor: COFFEE_PALETTE.border }}>
-                  <button
-                    onClick={() => router.push(`/templates/${template.id}`)}
-                    className="text-sm font-medium transition-opacity hover:opacity-80"
-                    style={{ color: COFFEE_PALETTE.primary }}
-                  >
-                    Edit Template
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteTemplate(template.id, template.name);
-                    }}
-                    disabled={deletingId === template.id}
-                    className="p-2 rounded hover:bg-red-50 transition-colors disabled:opacity-50"
-                  >
-                    {deletingId === template.id ? (
-                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"
-                        style={{ borderColor: COFFEE_PALETTE.error }} />
-                    ) : (
-                      <Trash2 className="w-4 h-4" style={{ color: COFFEE_PALETTE.error }} />
-                    )}
-                  </button>
+                  <span className="text-xs px-2 py-1 rounded" style={{
+                    backgroundColor: COFFEE_PALETTE.background,
+                    color: COFFEE_PALETTE.textSecondary
+                  }}>
+                    15 lines
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </main>
-    );
-  }
+
+              <div
+                className="p-4 bg-white font-mono overflow-hidden"
+              >
+                <div className="space-y-0.5">
+                  {SAMPLE_LINES.map((text, index) => {
+                    const lineStyle = lineDecoration.lines[index] || { fontSize: 14, alignment: LineAlignment.LEFT, isBold: false };
+                    return (
+                      <div
+                        key={index}
+                        style={{
+                          ...getLineStyle(lineStyle),
+                          color: COFFEE_PALETTE.textPrimary
+                        }}
+                      >
+                        {text}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="p-3 border-t flex items-center justify-between gap-2"
+                style={{ borderColor: COFFEE_PALETTE.border }}>
+                <button
+                  onClick={() => router.push(`/templates/${lineDecoration.id}`)}
+                  className="flex-1 py-2 px-3 rounded-md text-sm font-medium transition-opacity hover:opacity-80 flex items-center justify-center gap-2"
+                  style={{
+                    backgroundColor: COFFEE_PALETTE.primary,
+                    color: '#FFFFFF'
+                  }}
+                >
+                  <Edit size={14} />
+                  Edit
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteTemplate(lineDecoration.id);
+                  }}
+                  disabled={deletingId === lineDecoration.id}
+                  className="p-2 rounded-md hover:opacity-80 transition-opacity disabled:opacity-50"
+                  style={{
+                    backgroundColor: '#FFEBEE',
+                    color: COFFEE_PALETTE.error
+                  }}
+                >
+                  {deletingId === lineDecoration.id ? (
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Trash2 className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </main>
+  );
+}

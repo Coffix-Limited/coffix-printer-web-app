@@ -1,24 +1,26 @@
 import { create } from "zustand";
 import { Unsubscribe } from "firebase/firestore";
-import { TemplateService } from "../service/template_service";
-import { Template } from "../interface/Template";
+import { LineDecoration } from "../interface/LineDecoration";
+import { LineDecorationService } from "../service/line_decoration_service";
 
 interface TemplateStore {
     unsubscribe: Unsubscribe | null;
-    templates: Template[];
+    lineDecorations: LineDecoration[];
     loading: boolean;
     error: string | null;
-    setTemplates: () => void;
+    setLineDecorations: () => void;
     deleteTemplate: (id: string) => Promise<void>;
+    getTemplate: (id: string) => Promise<LineDecoration | null>;
+    saveTemplate: (template: LineDecoration) => Promise<void>;
 }
 
 export const useTemplateStore = create<TemplateStore>((set, get) => ({
     unsubscribe: null,
-    templates: [],
+    lineDecorations: [],
     loading: false,
     error: null,
-    setTemplates: () => {
-        const {unsubscribe} = get();
+    setLineDecorations: () => {
+        const { unsubscribe } = get();
         if (unsubscribe) {
             unsubscribe();
             set({ unsubscribe: null })
@@ -26,24 +28,44 @@ export const useTemplateStore = create<TemplateStore>((set, get) => ({
 
         set({ loading: true, error: null });
 
-        const unsubscribeListener = TemplateService.subscribeToTemplates(
-            (templates) => {
-                console.log("Templates fetched...", templates.length)
-                set({ templates, loading: false, error: null })
+        const unsubscribeListener = LineDecorationService.subscribeToTemplates(
+            (lineDecorations) => {
+                console.log("Templates fetched...", lineDecorations.length)
+                set({ lineDecorations, loading: false, error: null })
             },
             (error) => {
                 console.error("Template subscription error:", error);
-                set({ error: error.message || 'Failed to load templates', loading: false, templates: [] })
+                set({ error: error.message || 'Failed to load line decorations', loading: false, lineDecorations: [] })
             }
         );
 
-        set({unsubscribe: unsubscribeListener});
+        set({ unsubscribe: unsubscribeListener });
     },
     deleteTemplate: async (id: string) => {
         try {
-            await TemplateService.deleteTemplate(id);
+            await LineDecorationService.deleteTemplate(id);
         } catch (error) {
             console.error("Failed to delete template:", error);
+            throw error;
+        }
+    },
+    getTemplate: async (id: string) => {
+        const { lineDecorations } = get();
+        const template = lineDecorations.find(t => t.id === id);
+        if (template) return template;
+
+        try {
+            return await LineDecorationService.getTemplate(id);
+        } catch (error) {
+            console.error("Failed to get template:", error);
+            return null;
+        }
+    },
+    saveTemplate: async (template: LineDecoration) => {
+        try {
+            await LineDecorationService.updateTemplate(template);
+        } catch (error) {
+            console.error("Failed to save template:", error);
             throw error;
         }
     }
