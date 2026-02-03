@@ -74,7 +74,9 @@ export const PrinterService = {
             const printerRef = doc(db, "printer", printer.id);
             await updateDoc(printerRef, {
                 label: printer.label,
+                location: printer.location,
                 isOnline: printer.isOnline,
+                lineDecorationId: printer.lineDecorationId || "",
             });
             console.log('✅ Printer updated:', printer.id);
         } catch (error) {

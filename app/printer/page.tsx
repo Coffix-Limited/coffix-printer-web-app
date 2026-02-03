@@ -1,13 +1,15 @@
 "use client"
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { COFFEE_PALETTE } from "../constants/theme";
 import { usePrinterStore } from "./store/usePrinterStore";
-import { Printer as PrinterIcon, Circle, MapPin, Activity, Copy, Download, QrCode } from "lucide-react";
+import { Printer as PrinterIcon, MapPin, Activity, Copy, Download, QrCode, Eye } from "lucide-react";
 import { Printer } from "./interface/Printer";
 import QRCodeReact from "react-qr-code";
 
 export default function PrinterPage() {
+  const router = useRouter();
   const { printers, setPrinters, loading, error } = usePrinterStore();
   const [expandedPrinter, setExpandedPrinter] = useState<string | null>(null);
   const [copyMessage, setCopyMessage] = useState("");
@@ -112,7 +114,8 @@ export default function PrinterPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {printers.map((printer: Printer) => {
-            const qrCode = `https://coffix.co.nz?printerId=${printer.id}`;
+            const qrCode = `https://coffix.co.nz?printerId=${printer.id}&lineDecorationId=${printer.lineDecorationId}`;
+            console.log(qrCode);
             return (
               <div
                 key={printer.id}
@@ -159,6 +162,17 @@ export default function PrinterPage() {
                 </div>
 
                 <div className="mt-4 pt-4 border-t space-y-2" style={{ borderColor: COFFEE_PALETTE.border }}>
+                  <button
+                    onClick={() => router.push(`/printer/${printer.id}`)}
+                    className="w-full py-2 px-4 rounded-md text-sm font-medium transition-opacity hover:opacity-90 flex items-center justify-center gap-2"
+                    style={{
+                      backgroundColor: COFFEE_PALETTE.primary,
+                      color: '#FFFFFF'
+                    }}
+                  >
+                    <Eye size={16} />
+                    View Details
+                  </button>
                   <button
                     onClick={() => setExpandedPrinter(expandedPrinter === printer.id ? null : printer.id)}
                     className="w-full py-2 px-4 rounded-md text-sm font-medium transition-opacity hover:opacity-80 flex items-center justify-center gap-2"

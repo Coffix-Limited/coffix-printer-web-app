@@ -33,9 +33,9 @@ const ClientWrapper: React.FC<Props> = ({ children }) => {
         <div className="min-h-screen flex flex-col md:flex-row">
             <SideBar />
             <main className="flex-1 w-full md:ml-64 transition-all duration-300">
-                {children}
+        {children}
             </main>
-        </div>
+    </div>
     );
 }
 

@@ -54,7 +54,7 @@ export default function TemplatesPage() {
 
   const getLineStyle = (lineStyle: { fontSize: number; alignment: LineAlignment; isBold: boolean }) => {
     return {
-      fontSize: `${lineStyle.fontSize}px`,
+      fontSize: `${lineStyle.fontSize * 10}px`,
       textAlign: lineStyle.alignment as "left" | "center" | "right",
       fontWeight: lineStyle.isBold ? 'bold' as const : 'normal' as const,
       lineHeight: '1.2'

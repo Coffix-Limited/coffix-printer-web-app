@@ -3,4 +3,5 @@ export interface Printer {
     label: string
     location: string
     isOnline: boolean
+    lineDecorationId: string
 }
