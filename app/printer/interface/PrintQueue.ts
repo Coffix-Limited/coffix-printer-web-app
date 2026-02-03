@@ -1,8 +1,8 @@
 export enum PrintQueueStatus {
-    PENDING = 'PENDING',
-    PROCESSING = 'PROCESSING',
-    COMPLETED = 'COMPLETED',
-    ERROR = 'ERROR'
+    PENDING = 'pending',
+    PROCESSING = 'processing',
+    COMPLETED = 'completed',
+    ERROR = 'error'
 }
 
 export interface PrintQueue {

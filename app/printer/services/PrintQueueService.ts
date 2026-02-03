@@ -1,4 +1,4 @@
-import { collection, onSnapshot, query, where, addDoc, doc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore";
+import { collection, onSnapshot, query, where, addDoc, doc, updateDoc, deleteDoc, Timestamp, setDoc } from "firebase/firestore";
 import { PrintQueue, PrintQueueStatus } from "../interface/PrintQueue";
 import { db } from "@/app/utils/firebase.browser";
 
@@ -54,7 +54,10 @@ export const PrintQueueService = {
 
     async createPrintQueue(printQueue: Omit<PrintQueue, 'id'>): Promise<string> {
         try {
-            const docRef = await addDoc(collection(db, "printQueue"), {
+            const docRef = doc(collection(db, "printQueue"));
+            const docId = docRef.id;
+            await setDoc(docRef, {
+                id: docId,
                 printerId: printQueue.printerId,
                 createdAt: Timestamp.fromDate(printQueue.createdAt),
                 status: printQueue.status,
