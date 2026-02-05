@@ -1,6 +1,6 @@
 export interface Log {
-    id: string
+    id?: string
     level: string
-    time: Date
+    timestamp: Date
     message: string
 }

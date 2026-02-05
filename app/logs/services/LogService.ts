@@ -11,7 +11,7 @@ export const LogService = {
     ): (() => void) {
         try {
             const collectionRef = collection(db, "logs");
-            const q = query(collectionRef, orderBy("time", "desc"), limit(maxLogs));
+            const q = query(collectionRef, orderBy("timestamp", "desc"), limit(maxLogs));
             
             const unsubscribe = onSnapshot(
                 q, 
@@ -22,12 +22,21 @@ export const LogService = {
                     } else {
                         const logs = snapshot.docs.map(doc => {
                             const data = doc.data();
+                            let timestamp: Date;
+                            
+                            if (data.timestamp) {
+                                timestamp = data.timestamp.toDate ? data.timestamp.toDate() : new Date(data.timestamp);
+                            } else if (data.time) {
+                                timestamp = data.time.toDate ? data.time.toDate() : new Date(data.time);
+                            } else {
+                                timestamp = new Date();
+                            }
+                            
                             return {
                                 id: doc.id,
                                 level: data.level || 'info',
                                 message: data.message || '',
-                                time: data.time?.toDate ? data.time.toDate() : new Date(data.time),
-                                ...data
+                                timestamp: timestamp
                             }
                         });
                         console.log('✅ Logs loaded:', logs.length);

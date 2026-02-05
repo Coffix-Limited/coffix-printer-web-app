@@ -3,12 +3,12 @@
 import { useEffect, useMemo } from "react";
 import { COFFEE_PALETTE } from "../constants/theme";
 import { useLogStore } from "./store/useLogStore";
-import { 
-    FileText, 
-    AlertCircle, 
-    AlertTriangle, 
-    Info, 
-    CheckCircle, 
+import {
+    FileText,
+    AlertCircle,
+    AlertTriangle,
+    Info,
+    CheckCircle,
     Activity,
     Search,
     Filter,
@@ -26,9 +26,9 @@ export default function LogsPage() {
     const filteredLogs = useMemo(() => {
         return logs.filter(log => {
             const matchesLevel = !filterLevel || log.level === filterLevel;
-            const matchesSearch = !searchQuery || 
+            const matchesSearch = !searchQuery ||
                 log.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                log.id.toLowerCase().includes(searchQuery.toLowerCase());
+                log.id?.toLowerCase().includes(searchQuery.toLowerCase()) || '';
             return matchesLevel && matchesSearch;
         });
     }, [logs, filterLevel, searchQuery]);
@@ -89,10 +89,10 @@ export default function LogsPage() {
     return (
         <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
             {error && (
-                <div className="mb-6 p-4 rounded-lg border flex items-start gap-3" 
-                     style={{ backgroundColor: '#FFEBEE', borderColor: COFFEE_PALETTE.error }}>
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5" 
-                         style={{ backgroundColor: COFFEE_PALETTE.error }}>
+                <div className="mb-6 p-4 rounded-lg border flex items-start gap-3"
+                    style={{ backgroundColor: '#FFEBEE', borderColor: COFFEE_PALETTE.error }}>
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                        style={{ backgroundColor: COFFEE_PALETTE.error }}>
                         <span className="text-white text-xs">!</span>
                     </div>
                     <div className="flex-1">
@@ -122,19 +122,19 @@ export default function LogsPage() {
                 </div>
             </div>
 
-            <div className="mb-6 p-4 md:p-6 rounded-lg border" 
-                 style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
+            <div className="mb-6 p-4 md:p-6 rounded-lg border"
+                style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1 relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" 
-                                style={{ color: COFFEE_PALETTE.textSecondary }} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
+                            style={{ color: COFFEE_PALETTE.textSecondary }} />
                         <input
                             type="text"
                             placeholder="Search logs..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-10 py-2 rounded-md border focus:outline-none focus:ring-2"
-                            style={{ 
+                            style={{
                                 borderColor: COFFEE_PALETTE.border,
                                 color: COFFEE_PALETTE.textPrimary
                             }}
@@ -190,14 +190,14 @@ export default function LogsPage() {
                     </div>
                 </div>
             ) : filteredLogs.length === 0 ? (
-                <div className="p-12 rounded-lg border-2 border-dashed text-center" 
-                     style={{ borderColor: COFFEE_PALETTE.border }}>
+                <div className="p-12 rounded-lg border-2 border-dashed text-center"
+                    style={{ borderColor: COFFEE_PALETTE.border }}>
                     <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" style={{ color: COFFEE_PALETTE.textSecondary }} />
                     <h3 className="text-lg font-semibold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
                         {logs.length === 0 ? 'No Logs Found' : 'No Matching Logs'}
                     </h3>
                     <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                        {logs.length === 0 
+                        {logs.length === 0
                             ? 'Add log documents in Firestore to see them here'
                             : 'Try adjusting your filters or search query'}
                     </p>
@@ -205,7 +205,7 @@ export default function LogsPage() {
             ) : (
                 <div className="space-y-2">
                     {filteredLogs.map((log: Log) => (
-                        <div 
+                        <div
                             key={log.id}
                             className="p-4 md:p-5 rounded-lg border hover:shadow-sm transition-shadow"
                             style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}
@@ -214,18 +214,18 @@ export default function LogsPage() {
                                 <div className="shrink-0 mt-0.5">
                                     {getLogIcon(log.level)}
                                 </div>
-                                
+
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-start justify-between gap-2 mb-1">
                                         <div className="flex-1">
-                                            <p className="text-sm md:text-base font-medium wrap-break-word" 
-                                               style={{ color: COFFEE_PALETTE.textPrimary }}>
+                                            <p className="text-sm md:text-base font-medium wrap-break-word"
+                                                style={{ color: COFFEE_PALETTE.textPrimary }}>
                                                 {log.message}
                                             </p>
                                         </div>
-                                        <span 
+                                        <span
                                             className="shrink-0 px-2 py-0.5 rounded-full text-xs font-medium capitalize"
-                                            style={{ 
+                                            style={{
                                                 backgroundColor: `${getLogColor(log.level)}15`,
                                                 color: getLogColor(log.level)
                                             }}
@@ -233,13 +233,13 @@ export default function LogsPage() {
                                             {log.level}
                                         </span>
                                     </div>
-                                    
+
                                     <div className="flex items-center gap-3 text-xs" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                        <span className="font-mono">{log.id.substring(0, 8)}</span>
+                                        <span className="font-mono">{log.id?.substring(0, 8)}</span>
                                         <span>•</span>
-                                        <span>{formatTime(log.time)}</span>
+                                        <span>{formatTime(log.timestamp)}</span>
                                         <span>•</span>
-                                        <span>{log.time.toLocaleString()}</span>
+                                        <span>{log.timestamp.toLocaleString()}</span>
                                     </div>
                                 </div>
                             </div>
