@@ -18,13 +18,13 @@ export default function DashboardPage() {
 
     return (
         <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-            
+
             {/* Error Alert */}
             {error && (
-                <div className="mb-6 p-4 rounded-lg border flex flex-col sm:flex-row items-start gap-3" 
-                     style={{ backgroundColor: '#FFEBEE', borderColor: COFFEE_PALETTE.error }}>
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5" 
-                         style={{ backgroundColor: COFFEE_PALETTE.error }}>
+                <div className="mb-6 p-4 rounded-lg border flex flex-col sm:flex-row items-start gap-3"
+                    style={{ backgroundColor: '#FFEBEE', borderColor: COFFEE_PALETTE.error }}>
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                        style={{ backgroundColor: COFFEE_PALETTE.error }}>
                         <span className="text-white text-xs">!</span>
                     </div>
                     <div className="flex-1">
@@ -63,11 +63,11 @@ export default function DashboardPage() {
 
             {/* Main Content: Stacks on mobile/tablet, Side-by-side on desktop */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
+
                 {/* Printer Status Section */}
                 <div className="lg:col-span-2">
-                    <section className="p-5 md:p-6 rounded-lg shadow-sm border h-full" 
-                             style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
+                    <section className="p-5 md:p-6 rounded-lg shadow-sm border h-full"
+                        style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
                         <h3 className="text-lg font-semibold mb-4" style={{ color: COFFEE_PALETTE.textPrimary }}>Printer Status</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {printers.map((printer: Printer) => (
@@ -79,8 +79,8 @@ export default function DashboardPage() {
 
                 {/* Recent Activity Section */}
                 <div className="lg:col-span-1">
-                    <section className="p-5 md:p-6 rounded-lg shadow-sm border h-full" 
-                             style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
+                    <section className="p-5 md:p-6 rounded-lg shadow-sm border h-full"
+                        style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
                         <h3 className="text-lg font-semibold mb-4" style={{ color: COFFEE_PALETTE.textPrimary }}>Recent Activity</h3>
                         <div className="space-y-4">
                             {LOG_DATA.map((log: Log) => (
@@ -101,8 +101,8 @@ const PRINTER_DATA = [
 ];
 
 const LOG_DATA: Log[] = [
-    { level: 'info', message: 'Print job completed', id: 'AKL', time: new Date('2026-01-23T10:00:00') },
-    { level: 'success', message: 'Printer connected', id: 'TAU', time: new Date('2026-01-23T10:05:00') },
-    { level: 'warning', message: 'Low paper warning', id: 'HUR', time: new Date('2026-01-23T10:12:00') },
-    { level: 'error', message: 'Connection lost', id: 'NPL', time: new Date('2026-01-23T10:15:00') }
+    { level: 'info', message: 'Print job completed', id: 'AKL', timestamp: new Date('2026-01-23T10:00:00') },
+    { level: 'success', message: 'Printer connected', id: 'TAU', timestamp: new Date('2026-01-23T10:05:00') },
+    { level: 'warning', message: 'Low paper warning', id: 'HUR', timestamp: new Date('2026-01-23T10:12:00') },
+    { level: 'error', message: 'Connection lost', id: 'NPL', timestamp: new Date('2026-01-23T10:15:00') }
 ];
