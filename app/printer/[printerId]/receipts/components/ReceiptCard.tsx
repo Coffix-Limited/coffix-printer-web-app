@@ -10,7 +10,6 @@ interface ReceiptCardProps {
     formData: {
         status: PrintQueueStatus;
         lines: string[];
-        serviceTime: Date;
     };
     onStartEdit: (queue: PrintQueue) => void;
     onUpdate: (id: string) => void;
@@ -115,22 +114,6 @@ export default function ReceiptCard({
                             + Add Line
                         </button>
                     </div>
-                    <div>
-                        <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                            Service Time
-                        </label>
-                        <input
-                            type="datetime-local"
-                            value={formData.serviceTime.toISOString().slice(0, 16)}
-                            onChange={(e) => onUpdateServiceTime(new Date(e.target.value))}
-                            className="w-full px-3 py-2 rounded-md border text-sm"
-                            style={{
-                                backgroundColor: COFFEE_PALETTE.cardBg,
-                                borderColor: COFFEE_PALETTE.border,
-                                color: COFFEE_PALETTE.textPrimary
-                            }}
-                        />
-                    </div>
                     <div className="flex gap-2 mt-auto pt-4">
                         <button
                             onClick={() => onUpdate(queue.id)}
@@ -176,9 +159,6 @@ export default function ReceiptCard({
                             </div>
                             <p className="text-xs" style={{ color: COFFEE_PALETTE.textSecondary }}>
                                 Created: {queue.createdAt.toLocaleString()}
-                            </p>
-                            <p className="text-xs" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                Service: {queue.serviceTime.toLocaleString()}
                             </p>
                         </div>
                         <div className="flex gap-2">

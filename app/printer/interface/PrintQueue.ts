@@ -11,5 +11,4 @@ export interface PrintQueue {
     createdAt: Date;
     status: PrintQueueStatus;
     lines: string[];
-    serviceTime: Date;
 }

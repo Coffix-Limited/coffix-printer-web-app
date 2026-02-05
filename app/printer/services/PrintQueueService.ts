@@ -62,7 +62,6 @@ export const PrintQueueService = {
                 createdAt: Timestamp.fromDate(printQueue.createdAt),
                 status: printQueue.status,
                 lines: printQueue.lines,
-                serviceTime: Timestamp.fromDate(printQueue.serviceTime),
             });
             console.log('✅ Print queue created:', docRef.id);
             return docRef.id;
@@ -80,7 +79,6 @@ export const PrintQueueService = {
                 createdAt: Timestamp.fromDate(printQueue.createdAt),
                 status: printQueue.status,
                 lines: printQueue.lines,
-                serviceTime: Timestamp.fromDate(printQueue.serviceTime),
             });
             console.log('✅ Print queue updated:', printQueue.id);
         } catch (error) {

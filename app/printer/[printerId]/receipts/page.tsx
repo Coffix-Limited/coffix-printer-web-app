@@ -12,7 +12,7 @@ const SAMPLE_LINES = [
     "COFFEE SHOP",
     "123 Main Street",
     "Order #12345",
-    "Date: 28 Jan 2026",
+    `Date: ${new Date().toLocaleDateString()}`,
     "Cashier: John",
     "2x Flat White - $8.00",
     "1x Long Black - $4.50",
@@ -46,7 +46,6 @@ export default function ReceiptsPage() {
     const [formData, setFormData] = useState({
         status: PrintQueueStatus.PENDING,
         lines: [...SAMPLE_LINES] as string[],
-        serviceTime: new Date(),
     });
 
     useEffect(() => {
@@ -68,13 +67,11 @@ export default function ReceiptsPage() {
                 createdAt: new Date(),
                 status: formData.status,
                 lines: formData.lines.filter(line => line.trim() !== ''),
-                serviceTime: formData.serviceTime,
             });
             setIsCreating(false);
             setFormData({
                 status: PrintQueueStatus.PENDING,
                 lines: [...SAMPLE_LINES],
-                serviceTime: new Date(),
             });
         } catch (error) {
             console.error('Failed to create print queue:', error);
@@ -91,13 +88,11 @@ export default function ReceiptsPage() {
                 ...queue,
                 status: formData.status,
                 lines: formData.lines.filter(line => line.trim() !== ''),
-                serviceTime: formData.serviceTime,
             });
             setEditingId(null);
             setFormData({
                 status: PrintQueueStatus.PENDING,
                 lines: [...SAMPLE_LINES],
-                serviceTime: new Date(),
             });
         } catch (error) {
             console.error('Failed to update print queue:', error);
@@ -120,7 +115,6 @@ export default function ReceiptsPage() {
         setFormData({
             status: queue.status,
             lines: queue.lines.length > 0 ? queue.lines : [''],
-            serviceTime: queue.serviceTime,
         });
     };
 
@@ -130,7 +124,6 @@ export default function ReceiptsPage() {
         setFormData({
             status: PrintQueueStatus.PENDING,
             lines: [...SAMPLE_LINES],
-            serviceTime: new Date(),
         });
     };
 
@@ -208,7 +201,6 @@ export default function ReceiptsPage() {
                             setFormData({
                                 status: PrintQueueStatus.PENDING,
                                 lines: [...SAMPLE_LINES],
-                                serviceTime: new Date(),
                             });
                         }}
                         className="px-4 py-2 rounded-md text-sm font-medium transition-opacity hover:opacity-90 flex items-center gap-2"
@@ -275,43 +267,8 @@ export default function ReceiptsPage() {
                                             color: COFFEE_PALETTE.textPrimary
                                         }}
                                     />
-                                    {formData.lines.length > 1 && (
-                                        <button
-                                            onClick={() => removeLine(index)}
-                                            className="px-2 py-2 rounded-md transition-opacity hover:opacity-80"
-                                            style={{ backgroundColor: COFFEE_PALETTE.error, color: '#FFFFFF' }}
-                                        >
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    )}
                                 </div>
                             ))}
-                            <button
-                                onClick={addLine}
-                                className="mt-2 px-3 py-1 rounded-md text-xs font-medium transition-opacity hover:opacity-90"
-                                style={{
-                                    backgroundColor: COFFEE_PALETTE.background,
-                                    color: COFFEE_PALETTE.primary
-                                }}
-                            >
-                                + Add Line
-                            </button>
-                        </div>
-                        <div>
-                            <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                Service Time
-                            </label>
-                            <input
-                                type="datetime-local"
-                                value={formData.serviceTime.toISOString().slice(0, 16)}
-                                onChange={(e) => setFormData(prev => ({ ...prev, serviceTime: new Date(e.target.value) }))}
-                                className="w-full px-3 py-2 rounded-md border text-sm"
-                                style={{
-                                    backgroundColor: COFFEE_PALETTE.cardBg,
-                                    borderColor: COFFEE_PALETTE.border,
-                                    color: COFFEE_PALETTE.textPrimary
-                                }}
-                            />
                         </div>
                         <div className="flex gap-2">
                             <button
