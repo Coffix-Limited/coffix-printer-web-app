@@ -7,7 +7,7 @@ interface PrinterItemProps {
 
 export default function PrinterItem({
     printer,
-} : PrinterItemProps) {
+}: PrinterItemProps) {
 
     return (
         <div className="p-4 rounded-lg border hover:shadow-md transition-shadow" style={{ borderColor: COFFEE_PALETTE.border }}>

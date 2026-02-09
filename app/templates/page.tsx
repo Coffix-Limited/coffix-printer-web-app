@@ -5,25 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTemplateStore } from "./store/useTemplateStore";
 import { COFFEE_PALETTE } from "../constants/theme";
 import { Plus, Trash2, FileText, AlertCircle, Activity, Edit } from "lucide-react";
-import { LineAlignment } from "./interface/LineDecoration";
-
-const SAMPLE_LINES = [
-  "COFFEE SHOP",
-  "123 Main Street",
-  "Order #12345",
-  "Date: 28 Jan 2026",
-  "Cashier: John",
-  "2x Flat White - $8.00",
-  "1x Long Black - $4.50",
-  "1x Cappuccino - $5.00",
-  "Subtotal: $17.50",
-  "Tax (15%): $2.63",
-  "Total: $20.13",
-  "Thank you!",
-  "Visit us again",
-  "www.coffeeshop.com",
-  "Scan QR for feedback"
-];
+import TemplatePreview from "./components/TemplatePreview";
 
 export default function TemplatesPage() {
   const router = useRouter();
@@ -50,15 +32,6 @@ export default function TemplatesPage() {
     } finally {
       setDeletingId(null);
     }
-  };
-
-  const getLineStyle = (lineStyle: { fontSize: number; alignment: LineAlignment; isBold: boolean }) => {
-    return {
-      fontSize: `${lineStyle.fontSize * 10}px`,
-      textAlign: lineStyle.alignment as "left" | "center" | "right",
-      fontWeight: lineStyle.isBold ? 'bold' as const : 'normal' as const,
-      lineHeight: '1.2'
-    };
   };
 
   return (
@@ -149,25 +122,11 @@ export default function TemplatesPage() {
                 </div>
               </div>
 
-              <div
-                className="p-4 bg-white font-mono overflow-hidden"
-              >
-                <div className="space-y-0.5">
-                  {SAMPLE_LINES.map((text, index) => {
-                    const lineStyle = lineDecoration.lines[index] || { fontSize: 14, alignment: LineAlignment.LEFT, isBold: false };
-                    return (
-                      <div
-                        key={index}
-                        style={{
-                          ...getLineStyle(lineStyle),
-                          color: COFFEE_PALETTE.textPrimary
-                        }}
-                      >
-                        {text}
-                      </div>
-                    );
-                  })}
-                </div>
+              <div className="p-4 overflow-hidden">
+                <TemplatePreview
+                  lines={lineDecoration.lines}
+                  minHeight="320px"
+                />
               </div>
 
               <div className="p-3 border-t flex items-center justify-between gap-2"

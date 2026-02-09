@@ -34,6 +34,7 @@ export default function PrinterDetailsPage() {
     const [isSaving, setIsSaving] = useState(false);
     const [copyMessage, setCopyMessage] = useState("");
     const [formData, setFormData] = useState({
+        printerId: "",
         label: "",
         location: "",
         lineDecorationId: ""
@@ -50,6 +51,7 @@ export default function PrinterDetailsPage() {
             if (foundPrinter) {
                 setPrinter(foundPrinter);
                 setFormData({
+                    printerId: foundPrinter.printerId || "",
                     label: foundPrinter.label || "",
                     location: foundPrinter.location || "",
                     lineDecorationId: foundPrinter.lineDecorationId || ""
@@ -65,6 +67,7 @@ export default function PrinterDetailsPage() {
         try {
             const updatedPrinter: Printer = {
                 ...printer,
+                printerId: formData.printerId.trim(),
                 label: formData.label,
                 location: formData.location,
                 lineDecorationId: formData.lineDecorationId
@@ -198,8 +201,13 @@ export default function PrinterDetailsPage() {
                                     {isEditing ? "Edit Printer" : printer.label}
                                 </h3>
                                 <p className="text-sm font-mono" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                    {printer.id}
+                                    {printer.printerId || printer.id}
                                 </p>
+                                {printer.printerId && (
+                                    <p className="text-xs font-mono mt-0.5" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                        Doc: {printer.id}
+                                    </p>
+                                )}
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -218,6 +226,12 @@ export default function PrinterDetailsPage() {
 
                     {!isEditing ? (
                         <div className="space-y-4">
+                            <div>
+                                <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                    Printer ID
+                                </label>
+                                <p className="text-base font-mono" style={{ color: COFFEE_PALETTE.textPrimary }}>{printer.printerId || "—"}</p>
+                            </div>
                             <div>
                                 <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
                                     Label
@@ -267,6 +281,24 @@ export default function PrinterDetailsPage() {
                         </div>
                     ) : (
                         <div className="space-y-4">
+                            <div>
+                                <label className="text-xs font-semibold uppercase mb-2 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                    Printer ID
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.printerId}
+                                    onChange={(e) => setFormData({ ...formData, printerId: e.target.value })}
+                                    className="w-full px-3 py-2 rounded-md border text-base font-mono"
+                                    style={{
+                                        borderColor: COFFEE_PALETTE.border,
+                                        backgroundColor: COFFEE_PALETTE.cardBg,
+                                        color: COFFEE_PALETTE.textPrimary
+                                    }}
+                                    placeholder="e.g. VOS"
+                                />
+                                <p className="text-xs mt-1" style={{ color: COFFEE_PALETTE.textSecondary }}>Short ID (different from document ID)</p>
+                            </div>
                             <div>
                                 <label className="text-xs font-semibold uppercase mb-2 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
                                     Label
@@ -349,6 +381,7 @@ export default function PrinterDetailsPage() {
                                     onClick={() => {
                                         setIsEditing(false);
                                         setFormData({
+                                            printerId: printer.printerId || "",
                                             label: printer.label || "",
                                             location: printer.location || "",
                                             lineDecorationId: printer.lineDecorationId || ""

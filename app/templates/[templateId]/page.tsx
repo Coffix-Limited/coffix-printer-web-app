@@ -6,27 +6,10 @@ import { useParams, useRouter } from "next/navigation";
 import { COFFEE_PALETTE } from "@/app/constants/theme";
 import { LineDecoration, LineStyle, LineAlignment } from "@/app/templates/interface/LineDecoration";
 import { useTemplateStore } from "@/app/templates/store/useTemplateStore";
-
-const SAMPLE_LINES = [
-  "COFFEE SHOP",
-  "123 Main Street, Auckland",
-  "Order #12345",
-  "Date: 28 Jan 2026",
-  "Cashier: John",
-  "2x Flat White - $8.00",
-  "1x Long Black - $4.50",
-  "1x Cappuccino - $5.00",
-  "Subtotal: $17.50",
-  "Tax (15%): $2.63",
-  "Total: $20.13",
-  "Thank you!",
-  "Visit us again",
-  "www.coffeeshop.com",
-  "Scan QR for feedback"
-];
+import TemplatePreview from "@/app/templates/components/TemplatePreview";
 
 const DEFAULT_LINE: LineStyle = {
-  fontSize: 14,
+  fontSize: 4,
   alignment: LineAlignment.LEFT,
   isBold: false
 };
@@ -78,14 +61,6 @@ export default function TemplateDetailPage() {
     } finally {
       setSaving(false);
     }
-  };
-
-  const getStyleFromLineStyle = (lineStyle: LineStyle) => {
-    return {
-      fontSize: `${lineStyle.fontSize}px`,
-      textAlign: lineStyle.alignment as "left" | "center" | "right",
-      fontWeight: lineStyle.isBold ? 'bold' as const : 'normal' as const
-    };
   };
 
   if (loading) {
@@ -168,15 +143,15 @@ export default function TemplateDetailPage() {
                 </label>
                 <input
                   type="range"
-                  min="8"
-                  max="48"
-                  value={lines[selectedLine].fontSize}
-                  onChange={(e) => handleUpdateLine(selectedLine, { fontSize: parseInt(e.target.value) })}
+                  min={1}
+                  max={8}
+                  value={Math.min(8, Math.max(1, lines[selectedLine].fontSize))}
+                  onChange={(e) => handleUpdateLine(selectedLine, { fontSize: parseInt(e.target.value, 10) })}
                   className="w-full"
                 />
                 <div className="flex justify-between text-xs mt-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                  <span>1px</span>
                   <span>8px</span>
-                  <span>48px</span>
                 </div>
               </div>
 
@@ -244,30 +219,13 @@ export default function TemplateDetailPage() {
               </h3>
             </div>
 
-            <div
-              className="rounded-lg border-2 p-8 font-mono bg-white min-h-[600px]"
-              style={{ borderColor: COFFEE_PALETTE.border }}
-            >
-              {SAMPLE_LINES.map((text, index) => (
-                <div
-                  key={index}
-                  onClick={() => setSelectedLine(index)}
-                  className="cursor-pointer hover:bg-yellow-50 transition-colors px-2 py-1 rounded mb-1"
-                  style={{
-                    backgroundColor: selectedLine === index ? '#FEF3C7' : 'transparent'
-                  }}
-                >
-                  <div
-                    style={{
-                      ...getStyleFromLineStyle(lines[index]),
-                      color: COFFEE_PALETTE.textPrimary
-                    }}
-                  >
-                    {text}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <TemplatePreview
+              lines={lines}
+              fontScale={10}
+              onLineClick={setSelectedLine}
+              selectedLineIndex={selectedLine}
+              minHeight="600px"
+            />
 
             <div className="mt-4 p-3 rounded-md" style={{ backgroundColor: COFFEE_PALETTE.background }}>
               <p className="text-xs font-medium mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
@@ -275,9 +233,9 @@ export default function TemplateDetailPage() {
               </p>
               <ul className="text-xs space-y-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
                 <li>• Click on any line to edit its style</li>
-                <li>• Each line can have independent styling</li>
+                <li>• Each line can have independent styling (font size 1–8px)</li>
+                <li>• Preview is scaled so small sizes are readable; receipt will use 1–8px</li>
                 <li>• Highlighted line indicates current selection</li>
-                <li>• Changes are reflected in real-time</li>
               </ul>
             </div>
           </div>

@@ -7,6 +7,7 @@ import { usePrinterStore } from "../printer/store/usePrinterStore";
 import { PrinterService } from "../printer/services/PrinterService";
 
 export default function SetupPage() {
+  const [printerId, setPrinterId] = useState("");
   const [label, setLabel] = useState("");
   const [location, setLocation] = useState("");
   const [saving, setSaving] = useState(false);
@@ -19,6 +20,11 @@ export default function SetupPage() {
   }, [setPrinters]);
 
   const handleSave = async () => {
+    if (!printerId?.trim()) {
+      setSaveMessage("⚠️ Printer ID is required (e.g. VOS).");
+      setTimeout(() => setSaveMessage(""), 3000);
+      return;
+    }
     if (!label) {
       setSaveMessage("⚠️ Printer label is required to save.");
       setTimeout(() => setSaveMessage(""), 3000);
@@ -30,6 +36,7 @@ export default function SetupPage() {
 
     try {
       await PrinterService.addPrinter({
+        printerId: printerId.trim(),
         label: label,
         location: location || label
       });
@@ -39,6 +46,7 @@ export default function SetupPage() {
       
       setTimeout(() => {
         setSaveMessage("");
+        setPrinterId("");
         setLabel("");
         setLocation("");
       }, 2000);
@@ -79,6 +87,24 @@ export default function SetupPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                Printer ID *
+              </label>
+              <input
+                type="text"
+                value={printerId}
+                onChange={(e) => setPrinterId(e.target.value)}
+                placeholder="e.g. VOS"
+                className="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2"
+                style={{ 
+                  borderColor: COFFEE_PALETTE.border,
+                  color: COFFEE_PALETTE.textPrimary
+                }}
+              />
+              <p className="text-xs mt-1" style={{ color: COFFEE_PALETTE.textSecondary }}>Short ID for this printer (different from document ID)</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
                 Printer Label *
               </label>
               <input
@@ -114,7 +140,7 @@ export default function SetupPage() {
 
             <button
               onClick={handleSave}
-              disabled={saving || !label}
+              disabled={saving || !printerId?.trim() || !label}
               className="w-full py-3 rounded-md font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               style={{ backgroundColor: COFFEE_PALETTE.success }}
             >
@@ -140,11 +166,12 @@ export default function SetupPage() {
           <div>
             <h4 className="font-semibold text-sm mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>Setup Instructions</h4>
             <ol className="text-sm space-y-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
-              <li>1. Enter printer label/name (e.g., AKL, TAU, HUR)</li>
-              <li>2. Optional: Set location name</li>
-              <li>3. Click &ldquo;Save Printer&rdquo; to register (ID auto-generated)</li>
-              <li>4. Go to Printers page to view and manage printers</li>
-              <li>5. Download QR code and display at printer location</li>
+              <li>1. Enter Printer ID (e.g. VOS) — short code, different from document ID</li>
+              <li>2. Enter printer label/name (e.g., Auckland, Tauranga)</li>
+              <li>3. Optional: Set location name</li>
+              <li>4. Click &ldquo;Save Printer&rdquo; to register (document ID auto-generated)</li>
+              <li>5. Go to Printers page to view and manage printers</li>
+              <li>6. Download QR code and display at printer location</li>
             </ol>
           </div>
         </div>

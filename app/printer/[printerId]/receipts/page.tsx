@@ -8,22 +8,30 @@ import { COFFEE_PALETTE } from "@/app/constants/theme";
 import { ArrowLeft, Plus, Save, X } from "lucide-react";
 import ReceiptCard from "./components/ReceiptCard";
 
-const SAMPLE_LINES = [
-    "COFFEE SHOP",
-    "123 Main Street",
-    "Order #12345",
-    `Date: ${new Date().toLocaleDateString()}`,
-    "Cashier: John",
-    "2x Flat White - $8.00",
-    "1x Long Black - $4.50",
-    "1x Cappuccino - $5.00",
-    "Subtotal: $17.50",
-    "Tax (15%): $2.63",
-    "Total: $20.13",
-    "Thank you!",
-    "Visit us again",
-    "www.coffeeshop.com",
-    "Scan QR for feedback"
+const PRINT_TIME_OPTIONS = [
+    { label: "Now", minutes: 0 },
+    { label: "1 minute", minutes: 1 },
+    { label: "5 minutes", minutes: 5 },
+    { label: "30 minutes", minutes: 30 },
+    { label: "1 hr", minutes: 60 },
+] as const;
+
+export const SAMPLE_LINES = [
+    "Coffix Hamilton",
+    "124 Roberta St. Hamilton",
+    "GST 12345678",
+    "",
+    "Docket: 436246",
+    "",
+    "2x Flat White - $8.00 1x Long Black - $4.50 1x Cappuccino - $5.00",
+    "Total: $5.00",
+    "15% GST Included in the total: $0.75",
+    "",
+    "Paid by: Credit Card... 3654",
+    "Customer: David Chang",
+    "Time: 12-05-2026 12:45",
+    "By: John Blog",
+    "coffix.co.nz",
 ];
 
 export default function ReceiptsPage() {
@@ -43,9 +51,11 @@ export default function ReceiptsPage() {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [statusFilter, setStatusFilter] = useState<PrintQueueStatus | 'ALL'>('ALL');
+    const [selectedPrintTimeOption, setSelectedPrintTimeOption] = useState<number>(0);
     const [formData, setFormData] = useState({
         status: PrintQueueStatus.PENDING,
         lines: [...SAMPLE_LINES] as string[],
+        printTime: new Date(),
     });
 
     useEffect(() => {
@@ -66,12 +76,14 @@ export default function ReceiptsPage() {
                 printerId,
                 createdAt: new Date(),
                 status: formData.status,
-                lines: formData.lines.filter(line => line.trim() !== ''),
+                lines: formData.lines,
+                printTime: formData.printTime,
             });
             setIsCreating(false);
             setFormData({
                 status: PrintQueueStatus.PENDING,
                 lines: [...SAMPLE_LINES],
+                printTime: new Date(),
             });
         } catch (error) {
             console.error('Failed to create print queue:', error);
@@ -87,12 +99,14 @@ export default function ReceiptsPage() {
             await updatePrintQueue({
                 ...queue,
                 status: formData.status,
-                lines: formData.lines.filter(line => line.trim() !== ''),
+                lines: formData.lines,
+                printTime: formData.printTime,
             });
             setEditingId(null);
             setFormData({
                 status: PrintQueueStatus.PENDING,
                 lines: [...SAMPLE_LINES],
+                printTime: new Date(),
             });
         } catch (error) {
             console.error('Failed to update print queue:', error);
@@ -112,19 +126,34 @@ export default function ReceiptsPage() {
 
     const startEdit = (queue: PrintQueue) => {
         setEditingId(queue.id);
+        const printTime = queue.printTime ? new Date(queue.printTime) : new Date();
+        const diffMinutes = (printTime.getTime() - Date.now()) / 60000;
+        const option = PRINT_TIME_OPTIONS.find(o => Math.abs(o.minutes - diffMinutes) < 0.5);
+        setSelectedPrintTimeOption(option?.minutes ?? 0);
         setFormData({
             status: queue.status,
             lines: queue.lines.length > 0 ? queue.lines : [''],
+            printTime,
         });
     };
 
     const cancelEdit = () => {
         setEditingId(null);
         setIsCreating(false);
+        setSelectedPrintTimeOption(0);
         setFormData({
             status: PrintQueueStatus.PENDING,
             lines: [...SAMPLE_LINES],
+            printTime: new Date(),
         });
+    };
+
+    const setPrintTimeFromOption = (minutes: number) => {
+        setSelectedPrintTimeOption(minutes);
+        const base = new Date();
+        base.setMinutes(base.getMinutes() + minutes);
+        const status = minutes === 0 ? PrintQueueStatus.PENDING : PrintQueueStatus.SCHEDULED;
+        setFormData(prev => ({ ...prev, printTime: base, status }));
     };
 
     const addLine = () => {
@@ -156,6 +185,8 @@ export default function ReceiptsPage() {
                 return COFFEE_PALETTE.error;
             case PrintQueueStatus.PROCESSING:
                 return COFFEE_PALETTE.warning;
+            case PrintQueueStatus.SCHEDULED:
+                return COFFEE_PALETTE.primary;
             default:
                 return COFFEE_PALETTE.textSecondary;
         }
@@ -198,9 +229,11 @@ export default function ReceiptsPage() {
                     <button
                         onClick={() => {
                             setIsCreating(true);
+                            setSelectedPrintTimeOption(0);
                             setFormData({
                                 status: PrintQueueStatus.PENDING,
                                 lines: [...SAMPLE_LINES],
+                                printTime: new Date(),
                             });
                         }}
                         className="px-4 py-2 rounded-md text-sm font-medium transition-opacity hover:opacity-90 flex items-center gap-2"
@@ -251,24 +284,74 @@ export default function ReceiptsPage() {
                         </div>
                         <div>
                             <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                Print time
+                            </label>
+                            <div className="flex flex-wrap gap-2">
+                                {PRINT_TIME_OPTIONS.map(({ label, minutes }) => {
+                                    const isSelected = selectedPrintTimeOption === minutes;
+                                    return (
+                                        <button
+                                            key={minutes}
+                                            type="button"
+                                            onClick={() => setPrintTimeFromOption(minutes)}
+                                            className="px-3 py-1.5 rounded-full text-sm font-medium transition-all"
+                                            style={{
+                                                backgroundColor: isSelected ? COFFEE_PALETTE.primary : COFFEE_PALETTE.background,
+                                                color: isSelected ? '#FFFFFF' : COFFEE_PALETTE.textPrimary,
+                                                borderWidth: 1,
+                                                borderColor: isSelected ? COFFEE_PALETTE.primary : COFFEE_PALETTE.border
+                                            }}
+                                        >
+                                            {label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <p className="text-xs mt-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                Print at: {formData.printTime.toLocaleString()}
+                            </p>
+                        </div>
+                        <div>
+                            <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
                                 Lines
                             </label>
                             {formData.lines.map((line, index) => (
                                 <div key={index} className="flex gap-2 mb-2">
-                                    <input
-                                        type="text"
+                                    <textarea
                                         value={line}
                                         onChange={(e) => updateLine(index, e.target.value)}
-                                        placeholder={`Line ${index + 1}`}
-                                        className="flex-1 px-3 py-2 rounded-md border text-sm"
+                                        placeholder={`Line ${index + 1} — type multiple products (one per line)`}
+                                        rows={3}
+                                        className="flex-1 px-3 py-2 rounded-md border text-sm resize-y min-h-16"
                                         style={{
                                             backgroundColor: COFFEE_PALETTE.cardBg,
                                             borderColor: COFFEE_PALETTE.border,
                                             color: COFFEE_PALETTE.textPrimary
                                         }}
                                     />
+                                    {formData.lines.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeLine(index)}
+                                            className="px-2 py-2 rounded-md transition-opacity hover:opacity-80 shrink-0"
+                                            style={{ backgroundColor: COFFEE_PALETTE.error, color: '#FFFFFF' }}
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    )}
                                 </div>
                             ))}
+                            <button
+                                type="button"
+                                onClick={addLine}
+                                className="mt-2 px-3 py-1.5 rounded-md text-sm font-medium transition-opacity hover:opacity-90"
+                                style={{
+                                    backgroundColor: COFFEE_PALETTE.background,
+                                    color: COFFEE_PALETTE.primary
+                                }}
+                            >
+                                + Add line
+                            </button>
                         </div>
                         <div className="flex gap-2">
                             <button
@@ -328,7 +411,8 @@ export default function ReceiptsPage() {
                             onAddLine={addLine}
                             onRemoveLine={removeLine}
                             onUpdateStatus={(status) => setFormData(prev => ({ ...prev, status }))}
-                            onUpdateServiceTime={(date) => setFormData(prev => ({ ...prev, serviceTime: date }))}
+                            setPrintTimeFromOption={setPrintTimeFromOption}
+                            selectedPrintTimeOption={selectedPrintTimeOption}
                             getStatusColor={getStatusColor}
                         />
                     ))}

@@ -1,14 +1,16 @@
 export enum PrintQueueStatus {
-    PENDING = 'pending',
-    PROCESSING = 'processing',
-    COMPLETED = 'completed',
-    ERROR = 'error'
+  PENDING = "pending",
+  PROCESSING = "processing",
+  COMPLETED = "completed",
+  SCHEDULED = "scheduled",
+  ERROR = "error",
 }
 
 export interface PrintQueue {
-    id: string;
-    printerId: string;
-    createdAt: Date;
-    status: PrintQueueStatus;
-    lines: string[];
+  id: string;
+  printerId: string;
+  createdAt: Date;
+  status: PrintQueueStatus;
+  lines: string[];
+  printTime: Date;
 }

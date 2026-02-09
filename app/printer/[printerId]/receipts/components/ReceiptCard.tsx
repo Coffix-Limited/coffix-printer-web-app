@@ -4,12 +4,21 @@ import { PrintQueue, PrintQueueStatus } from "../../../interface/PrintQueue";
 import { COFFEE_PALETTE } from "@/app/constants/theme";
 import { Edit, Trash2, Save, X } from "lucide-react";
 
+const PRINT_TIME_OPTIONS = [
+    { label: "Now", minutes: 0 },
+    { label: "1 minute", minutes: 1 },
+    { label: "5 minutes", minutes: 5 },
+    { label: "30 minutes", minutes: 30 },
+    { label: "1 hr", minutes: 60 },
+] as const;
+
 interface ReceiptCardProps {
     queue: PrintQueue;
     editingId: string | null;
     formData: {
         status: PrintQueueStatus;
         lines: string[];
+        printTime: Date;
     };
     onStartEdit: (queue: PrintQueue) => void;
     onUpdate: (id: string) => void;
@@ -19,7 +28,8 @@ interface ReceiptCardProps {
     onAddLine: () => void;
     onRemoveLine: (index: number) => void;
     onUpdateStatus: (status: PrintQueueStatus) => void;
-    onUpdateServiceTime: (date: Date) => void;
+    setPrintTimeFromOption: (minutes: number) => void;
+    selectedPrintTimeOption: number;
     getStatusColor: (status: PrintQueueStatus) => string;
 }
 
@@ -35,7 +45,8 @@ export default function ReceiptCard({
     onAddLine,
     onRemoveLine,
     onUpdateStatus,
-    onUpdateServiceTime,
+    setPrintTimeFromOption,
+    selectedPrintTimeOption,
     getStatusColor
 }: ReceiptCardProps) {
     const isEditing = editingId === queue.id;
@@ -74,17 +85,46 @@ export default function ReceiptCard({
                     </div>
                     <div>
                         <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                            Print time
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                            {PRINT_TIME_OPTIONS.map(({ label, minutes }) => {
+                                const isSelected = selectedPrintTimeOption === minutes;
+                                return (
+                                    <button
+                                        key={minutes}
+                                        type="button"
+                                        onClick={() => setPrintTimeFromOption(minutes)}
+                                        className="px-3 py-1.5 rounded-full text-sm font-medium transition-all"
+                                        style={{
+                                            backgroundColor: isSelected ? COFFEE_PALETTE.primary : COFFEE_PALETTE.background,
+                                            color: isSelected ? '#FFFFFF' : COFFEE_PALETTE.textPrimary,
+                                            borderWidth: 1,
+                                            borderColor: isSelected ? COFFEE_PALETTE.primary : COFFEE_PALETTE.border
+                                        }}
+                                    >
+                                        {label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <p className="text-xs mt-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                            Print at: {formData.printTime.toLocaleString()}
+                        </p>
+                    </div>
+                    <div>
+                        <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
                             Lines
                         </label>
                         <div className="max-h-48 overflow-y-auto space-y-2">
                             {formData.lines.map((line, index) => (
                                 <div key={index} className="flex gap-2">
-                                    <input
-                                        type="text"
+                                    <textarea
                                         value={line}
                                         onChange={(e) => onUpdateLine(index, e.target.value)}
-                                        placeholder={`Line ${index + 1}`}
-                                        className="flex-1 px-3 py-2 rounded-md border text-sm"
+                                        placeholder={`Line ${index + 1} — one product per line`}
+                                        rows={3}
+                                        className="flex-1 px-3 py-2 rounded-md border text-sm resize-y min-h-16"
                                         style={{
                                             backgroundColor: COFFEE_PALETTE.cardBg,
                                             borderColor: COFFEE_PALETTE.border,
@@ -160,6 +200,11 @@ export default function ReceiptCard({
                             <p className="text-xs" style={{ color: COFFEE_PALETTE.textSecondary }}>
                                 Created: {queue.createdAt.toLocaleString()}
                             </p>
+                            {queue.printTime && (
+                                <p className="text-xs" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                    Print at: {new Date(queue.printTime).toLocaleString()}
+                                </p>
+                            )}
                         </div>
                         <div className="flex gap-2">
                             <button
@@ -185,7 +230,7 @@ export default function ReceiptCard({
                         <div className="space-y-1 max-h-48 overflow-y-auto">
                             {queue.lines.length > 0 ? (
                                 queue.lines.map((line, index) => (
-                                    <p key={index} className="text-sm font-mono" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                                    <p key={index} className="text-sm font-mono whitespace-pre-line" style={{ color: COFFEE_PALETTE.textPrimary }}>
                                         {line}
                                     </p>
                                 ))
