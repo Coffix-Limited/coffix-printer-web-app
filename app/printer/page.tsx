@@ -4,15 +4,38 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { COFFEE_PALETTE } from "../constants/theme";
 import { usePrinterStore } from "./store/usePrinterStore";
-import { Printer as PrinterIcon, MapPin, Activity, Copy, Download, QrCode, Eye } from "lucide-react";
+import { Printer as PrinterIcon, MapPin, Activity, Copy, Download, QrCode, Eye, EyeOff, Trash2 } from "lucide-react";
 import { Printer } from "./interface/Printer";
 import QRCodeReact from "react-qr-code";
 
 export default function PrinterPage() {
   const router = useRouter();
-  const { printers, setPrinters, loading, error } = usePrinterStore();
+  const { printers, setPrinters, loading, error, deletePrinter, setPrinterVisible } = usePrinterStore();
   const [expandedPrinter, setExpandedPrinter] = useState<string | null>(null);
   const [copyMessage, setCopyMessage] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [visibilityFilter, setVisibilityFilter] = useState<"all" | "visible" | "hidden">("all");
+
+  const filteredPrinters = printers.filter((p) => {
+    const visible = p.isVisible ?? true;
+    if (visibilityFilter === "visible") return visible;
+    if (visibilityFilter === "hidden") return !visible;
+    return true;
+  });
+
+  const handleDelete = async (printerId: string) => {
+    if (!confirm("Delete this printer? This cannot be undone.")) return;
+    setDeletingId(printerId);
+    try {
+      await deletePrinter(printerId);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleToggleVisible = async (printer: Printer) => {
+    await setPrinterVisible(printer.id, !(printer.isVisible ?? true));
+  };
 
   useEffect(() => {
     setPrinters();
@@ -87,10 +110,28 @@ export default function PrinterPage() {
           {loading && <span className="animate-pulse text-xs italic">Loading...</span>}
           {!loading && printers.length > 0 && (
             <span className="bg-stone-100 px-2 py-0.5 rounded-full text-xs">
-              {printers.length} printer{printers.length !== 1 ? 's' : ''}
+              {filteredPrinters.length} of {printers.length} printer{printers.length !== 1 ? "s" : ""}
             </span>
           )}
         </div>
+        {!loading && printers.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-3">
+            {(["all", "visible", "hidden"] as const).map((key) => (
+              <button
+                key={key}
+                onClick={() => setVisibilityFilter(key)}
+                className="px-3 py-1.5 rounded-md text-sm font-medium transition-opacity hover:opacity-90"
+                style={{
+                  backgroundColor: visibilityFilter === key ? COFFEE_PALETTE.primary : COFFEE_PALETTE.background,
+                  color: visibilityFilter === key ? "#FFFFFF" : COFFEE_PALETTE.textPrimary,
+                  border: `1px solid ${visibilityFilter === key ? COFFEE_PALETTE.primary : COFFEE_PALETTE.border}`,
+                }}
+              >
+                {key === "all" ? "All" : key === "visible" ? "Visible only" : "Hidden only"}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {loading ? (
@@ -100,22 +141,24 @@ export default function PrinterPage() {
             <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>Loading printers...</p>
           </div>
         </div>
-      ) : printers.length === 0 ? (
+      ) : filteredPrinters.length === 0 ? (
         <div className="p-12 rounded-lg border-2 border-dashed text-center"
           style={{ borderColor: COFFEE_PALETTE.border }}>
           <PrinterIcon className="w-12 h-12 mx-auto mb-3 opacity-30" style={{ color: COFFEE_PALETTE.textSecondary }} />
           <h3 className="text-lg font-semibold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
-            No Printers Found
+            {printers.length === 0 ? "No Printers Found" : "No printers match filter"}
           </h3>
           <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
-            Add printer documents in Firestore to see them here
+            {printers.length === 0
+              ? "Add printer documents in Firestore to see them here"
+              : "Try switching to All or Visible only"}
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {printers.map((printer: Printer) => {
+          {filteredPrinters.map((printer: Printer) => {
             const qrCode = `https://coffix.co.nz?printerId=${printer.id}&lineDecorationId=${printer.lineDecorationId}`;
-            console.log(qrCode);
+            const isVisible = printer.isVisible ?? true;
             return (
               <div
                 key={printer.id}
@@ -134,12 +177,37 @@ export default function PrinterPage() {
                       <h3 className="font-bold text-lg break-all" style={{ color: COFFEE_PALETTE.textPrimary }}>
                         {printer.label}
                       </h3>
-                      <p className="text-sm break-all" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                        {printer.id}
+                      <p className="text-sm font-mono break-all" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                        Printer ID: {printer.printerId || printer.id}
                       </p>
+                      {printer.printerId && (
+                        <p className="text-xs font-mono opacity-75 break-all" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                          Doc: {printer.id}
+                        </p>
+                      )}
                     </div>
                   </div>
-
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleToggleVisible(printer)}
+                      className="p-2 rounded-md transition-opacity hover:opacity-80"
+                      style={{ color: isVisible ? COFFEE_PALETTE.primary : COFFEE_PALETTE.textSecondary }}
+                      title={isVisible ? "Hide printer" : "Show printer"}
+                      aria-label={isVisible ? "Hide printer" : "Show printer"}
+                    >
+                      {isVisible ? <Eye size={18} /> : <EyeOff size={18} />}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(printer.id)}
+                      disabled={deletingId === printer.id}
+                      className="p-2 rounded-md transition-opacity hover:opacity-80 disabled:opacity-50"
+                      style={{ color: COFFEE_PALETTE.error }}
+                      title="Delete printer"
+                      aria-label="Delete printer"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                   {/* <div className="flex items-center gap-1.5">
                                     <Circle 
                                         className="w-2.5 h-2.5 fill-current"

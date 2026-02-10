@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Coffee Shop Dashboard",
+  title: "Coffix Server Printer Dashboard",
   description: "Management dashboard for Coffee Shop Print Server network",
 };
 

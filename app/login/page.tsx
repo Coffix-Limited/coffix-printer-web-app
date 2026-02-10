@@ -75,7 +75,7 @@ export default function LoginPage() {
                             className="text-2xl font-bold mb-2"
                             style={{ color: COFFEE_PALETTE.textPrimary }}
                         >
-                            Coffee Shop Dashboard
+                            Coffix Server Printer Dashboard 
                         </h1>
                         <p 
                             className="text-sm"

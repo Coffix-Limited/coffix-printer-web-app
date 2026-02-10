@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Login - Coffee Shop Dashboard",
-  description: "Admin login for Coffee Shop Dashboard",
+  title: "Login - Coffix Server Printer Dashboard Admin",
+  description: "Admin login for Coffix Server Printer Dashboard",
 };
 
 export default function LoginLayout({

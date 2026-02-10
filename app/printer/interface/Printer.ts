@@ -6,4 +6,5 @@ export interface Printer {
   printerId: string;
   lineDecorationId: string;
   createdAt: Date;
+  isVisible: boolean;
 }

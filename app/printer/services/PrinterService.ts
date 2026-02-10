@@ -4,6 +4,7 @@ import {
   setDoc,
   doc,
   updateDoc,
+  deleteDoc,
   query,
   orderBy,
   serverTimestamp,
@@ -81,6 +82,7 @@ export const PrinterService = {
           location,
           isOnline: false,
           lineDecorationId: "",
+          isVisible: true,
           createdAt: serverTimestamp(),
         },
         { merge: true },
@@ -101,10 +103,22 @@ export const PrinterService = {
         location: printer.location,
         isOnline: printer.isOnline,
         lineDecorationId: printer.lineDecorationId || "",
+        isVisible: printer.isVisible ?? true,
       });
       console.log("✅ Printer updated:", printer.id);
     } catch (error) {
       console.error("❌ Failed to update printer:", error);
+      throw error;
+    }
+  },
+
+  async deletePrinter(printerId: string): Promise<void> {
+    try {
+      const printerRef = doc(db, "printer", printerId);
+      await deleteDoc(printerRef);
+      console.log("✅ Printer deleted:", printerId);
+    } catch (error) {
+      console.error("❌ Failed to delete printer:", error);
       throw error;
     }
   },

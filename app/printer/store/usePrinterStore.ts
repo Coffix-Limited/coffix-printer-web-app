@@ -9,6 +9,8 @@ interface PrinterStore {
     loading: boolean;
     error: string | null;
     setPrinters: () => void;
+    deletePrinter: (printerId: string) => Promise<void>;
+    setPrinterVisible: (printerId: string, isVisible: boolean) => Promise<void>;
 }
 
 export const usePrinterStore = create<PrinterStore>((set, get) => ({
@@ -41,5 +43,13 @@ export const usePrinterStore = create<PrinterStore>((set, get) => ({
         );
 
         set({unsubscribe: unsubscribeListener});
+    },
+    deletePrinter: async (printerId: string) => {
+        await PrinterService.deletePrinter(printerId);
+    },
+    setPrinterVisible: async (printerId: string, isVisible: boolean) => {
+        const printer = get().printers.find((p) => p.id === printerId);
+        if (!printer) return;
+        await PrinterService.updatePrinter({ ...printer, isVisible });
     },
 }))

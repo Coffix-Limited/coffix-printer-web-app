@@ -16,7 +16,9 @@ import {
     Save,
     AlertCircle,
     Circle,
-    FileText
+    FileText,
+    Eye,
+    EyeOff
 } from "lucide-react";
 import { Printer } from "../interface/Printer";
 import QRCodeReact from "react-qr-code";
@@ -26,7 +28,7 @@ export default function PrinterDetailsPage() {
     const router = useRouter();
     const printerId = params.printerId as string;
 
-    const { printers, setPrinters, loading: printersLoading } = usePrinterStore();
+    const { printers, setPrinters, setPrinterVisible, loading: printersLoading } = usePrinterStore();
     const { lineDecorations, setLineDecorations, loading: templatesLoading } = useTemplateStore();
 
     const [printer, setPrinter] = useState<Printer | null>(null);
@@ -112,6 +114,14 @@ export default function PrinterDetailsPage() {
         navigator.clipboard.writeText(url);
         setCopyMessage("URL copied!");
         setTimeout(() => setCopyMessage(""), 2000);
+    };
+
+    const isVisible = printer?.isVisible ?? true;
+    const handleToggleVisible = async () => {
+        if (!printer) return;
+        const next = !isVisible;
+        setPrinter(prev => prev ? { ...prev, isVisible: next } : null);
+        await setPrinterVisible(printer.id, next);
     };
 
     if (printersLoading || templatesLoading) {
@@ -201,26 +211,43 @@ export default function PrinterDetailsPage() {
                                     {isEditing ? "Edit Printer" : printer.label}
                                 </h3>
                                 <p className="text-sm font-mono" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                    {printer.printerId || printer.id}
+                                    Printer ID: {printer.printerId || printer.id}
                                 </p>
                                 {printer.printerId && (
                                     <p className="text-xs font-mono mt-0.5" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                        Doc: {printer.id}
+                                        Doc ID: {printer.id}
                                     </p>
                                 )}
                             </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Circle
-                                className="w-3 h-3 fill-current"
-                                style={{ color: printer.isOnline ? COFFEE_PALETTE.success : COFFEE_PALETTE.error }}
-                            />
-                            <span
-                                className="text-sm font-medium"
-                                style={{ color: printer.isOnline ? COFFEE_PALETTE.success : COFFEE_PALETTE.error }}
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                <Circle
+                                    className="w-3 h-3 fill-current"
+                                    style={{ color: printer.isOnline ? COFFEE_PALETTE.success : COFFEE_PALETTE.error }}
+                                />
+                                <span
+                                    className="text-sm font-medium"
+                                    style={{ color: printer.isOnline ? COFFEE_PALETTE.success : COFFEE_PALETTE.error }}
+                                >
+                                    {printer.isOnline ? 'Online' : 'Offline'}
+                                </span>
+                            </div>
+                            <button
+                                onClick={handleToggleVisible}
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-md border transition-opacity hover:opacity-90"
+                                style={{
+                                    borderColor: COFFEE_PALETTE.border,
+                                    backgroundColor: COFFEE_PALETTE.background,
+                                    color: isVisible ? COFFEE_PALETTE.primary : COFFEE_PALETTE.textSecondary
+                                }}
+                                title={isVisible ? "Visible to customers" : "Hidden from customers"}
                             >
-                                {printer.isOnline ? 'Online' : 'Offline'}
-                            </span>
+                                {isVisible ? <Eye size={16} /> : <EyeOff size={16} />}
+                                <span className="text-sm font-medium">
+                                    {isVisible ? "Visible" : "Hidden"}
+                                </span>
+                            </button>
                         </div>
                     </div>
 
