@@ -56,7 +56,11 @@ export default function TemplatePreview({
       {sampleLines.map((text, index) => {
         const lineStyle = lines[index] ?? DEFAULT_LINE_STYLE;
         const isSelected = selectedLineIndex === index;
-        const content = text === "" ? "\u00A0" : text;
+        const raw = text === "" ? "\u00A0" : text;
+        // Support both real newlines and literal "\n" so they render as line breaks
+        const content = typeof raw === "string" ? raw.replace(/\\n/g, "\n") : raw;
+        const baseStyle = getStyle(lineStyle);
+        const subLines = String(content).split("\n");
 
         return (
           <div
@@ -71,7 +75,33 @@ export default function TemplatePreview({
               backgroundColor: isSelected ? "#FEF3C7" : "transparent"
             }}
           >
-            <div style={getStyle(lineStyle)}>{content}</div>
+            {subLines.map((subLine, subIndex) => {
+              const sep = "|";
+              const sepIdx = subLine.indexOf(sep);
+              if (sepIdx !== -1) {
+                const left = subLine.slice(0, sepIdx).trim();
+                const right = subLine.slice(sepIdx + sep.length).trim();
+                return (
+                  <div
+                    key={subIndex}
+                    style={{
+                      ...baseStyle,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: "0.5em"
+                    }}
+                  >
+                    <span style={{ flexShrink: 0 }}>{left}</span>
+                    <span style={{ flexShrink: 0 }}>{right}</span>
+                  </div>
+                );
+              }
+              return (
+                <div key={subIndex} style={{ ...baseStyle, whiteSpace: "pre-line" }}>
+                  {subLine}
+                </div>
+              );
+            })}
           </div>
         );
       })}

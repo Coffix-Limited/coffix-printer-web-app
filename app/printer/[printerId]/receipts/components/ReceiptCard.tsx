@@ -231,7 +231,7 @@ export default function ReceiptCard({
                             {queue.lines.length > 0 ? (
                                 queue.lines.map((line, index) => (
                                     <p key={index} className="text-sm font-mono whitespace-pre-line" style={{ color: COFFEE_PALETTE.textPrimary }}>
-                                        {line}
+                                        {typeof line === "string" ? line.replace(/\\n/g, "\n") : line}
                                     </p>
                                 ))
                             ) : (

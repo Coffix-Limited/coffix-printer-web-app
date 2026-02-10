@@ -7,6 +7,7 @@ import { PrintQueue, PrintQueueStatus } from "../../interface/PrintQueue";
 import { COFFEE_PALETTE } from "@/app/constants/theme";
 import { ArrowLeft, Plus, Save, X } from "lucide-react";
 import ReceiptCard from "./components/ReceiptCard";
+import { SAMPLE_LINES } from "@/app/templates/constants";
 
 const PRINT_TIME_OPTIONS = [
     { label: "Now", minutes: 0 },
@@ -16,23 +17,6 @@ const PRINT_TIME_OPTIONS = [
     { label: "1 hr", minutes: 60 },
 ] as const;
 
-export const SAMPLE_LINES = [
-    "Coffix Hamilton",
-    "124 Roberta St. Hamilton",
-    "GST 12345678",
-    "",
-    "Docket: 436246",
-    "",
-    "2x Flat White - $8.00 1x Long Black - $4.50 1x Cappuccino - $5.00",
-    "Total: $5.00",
-    "15% GST Included in the total: $0.75",
-    "",
-    "Paid by: Credit Card... 3654",
-    "Customer: David Chang",
-    "Time: 12-05-2026 12:45",
-    "By: John Blog",
-    "coffix.co.nz",
-];
 
 export default function ReceiptsPage() {
     const params = useParams();
