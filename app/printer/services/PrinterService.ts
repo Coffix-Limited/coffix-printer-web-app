@@ -19,7 +19,8 @@ export const PrinterService = {
   ): () => void {
     try {
       const collectionRef = collection(db, "printer");
-      const q = query(collectionRef, orderBy("createdAt", "asc"));
+
+      const q = query(collectionRef, orderBy("createdAt", "desc"));
       const unsubscribe = onSnapshot(
         q,
         (snapshot) => {

@@ -8,13 +8,16 @@ import { Printer } from "../printer/interface/Printer";
 import StatusCard from "./components/StatusCard";
 import PrinterItem from "./components/PrinterItem";
 import RecentActivity from "./components/RecentActivity";
+import { useLogStore } from "../logs/store/useLogStore";
 
 export default function DashboardPage() {
     const { printers, setPrinters, loading, error } = usePrinterStore();
+    const { logs, setLogs } = useLogStore();
 
     useEffect(() => {
         setPrinters()
-    }, [setPrinters]);
+        setLogs();
+    }, [setPrinters, setLogs]);
 
     return (
         <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
@@ -54,11 +57,9 @@ export default function DashboardPage() {
             </div>
 
             {/* Top Stats Grid: 1 col on mobile, 2 on tablet, 4 on desktop */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6 mb-8">
                 <StatusCard title="Total Printers" value={printers.length.toString()} subtext="Across all locations" icon="🖨️" />
                 <StatusCard title="Online Now" value="9" subtext="3 offline" statusDot />
-                <StatusCard title="Jobs Today" value="347" subtext="+23 from yesterday" icon="📄" />
-                <StatusCard title="Success Rate" value="98.5%" subtext="Last 7 days" icon="✓" />
             </div>
 
             {/* Main Content: Stacks on mobile/tablet, Side-by-side on desktop */}
@@ -83,7 +84,7 @@ export default function DashboardPage() {
                         style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
                         <h3 className="text-lg font-semibold mb-4" style={{ color: COFFEE_PALETTE.textPrimary }}>Recent Activity</h3>
                         <div className="space-y-4">
-                            {LOG_DATA.map((log: Log) => (
+                            {logs.slice(0, 5).map((log: Log) => (
                                 <RecentActivity key={log.id} log={log} />
                             ))}
                         </div>
@@ -93,16 +94,3 @@ export default function DashboardPage() {
         </main>
     )
 }
-
-// Dummy Data (In a real app, these would come from your store or props)
-const PRINTER_DATA = [
-    { id: 'AKL', jobs: 38 }, { id: 'TAU', jobs: 44 }, { id: 'HUR', jobs: 45 },
-    { id: 'CHC', jobs: 21 }, { id: 'WLG', jobs: 58 }, { id: 'NPL', jobs: 34 }
-];
-
-const LOG_DATA: Log[] = [
-    { level: 'info', message: 'Print job completed', id: 'AKL', timestamp: new Date('2026-01-23T10:00:00') },
-    { level: 'success', message: 'Printer connected', id: 'TAU', timestamp: new Date('2026-01-23T10:05:00') },
-    { level: 'warning', message: 'Low paper warning', id: 'HUR', timestamp: new Date('2026-01-23T10:12:00') },
-    { level: 'error', message: 'Connection lost', id: 'NPL', timestamp: new Date('2026-01-23T10:15:00') }
-];
