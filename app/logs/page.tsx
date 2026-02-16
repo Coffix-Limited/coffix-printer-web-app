@@ -24,11 +24,19 @@ export default function LogsPage() {
     }, [setLogs]);
 
     const filteredLogs = useMemo(() => {
+        const q = (searchQuery ?? "").trim().toLowerCase();
         return logs.filter(log => {
             const matchesLevel = !filterLevel || log.level === filterLevel;
-            const matchesSearch = !searchQuery ||
-                log.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                log.id?.toLowerCase().includes(searchQuery.toLowerCase()) || '';
+            if (!q) return matchesLevel;
+            const message = (log.message ?? "").toLowerCase();
+            const id = (log.id ?? "").toLowerCase();
+            const printerId = (log.printerId ?? "").toLowerCase();
+            const serverId = (log.serverId ?? "").toLowerCase();
+            const matchesSearch =
+                message.includes(q) ||
+                id.includes(q) ||
+                printerId.includes(q) ||
+                serverId.includes(q);
             return matchesLevel && matchesSearch;
         });
     }, [logs, filterLevel, searchQuery]);
@@ -75,7 +83,7 @@ export default function LogsPage() {
         return date.toLocaleDateString();
     };
 
-    const logLevels = ['info', 'success', 'warning', 'error'];
+    const logLevels = ['info', 'warning', 'error'];
     const logCounts = useMemo(() => {
         return {
             total: logs.length,
@@ -234,12 +242,28 @@ export default function LogsPage() {
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center gap-3 text-xs" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                        <span className="font-mono">{log.id?.substring(0, 8)}</span>
-                                        <span>•</span>
+                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                        {log.id != null && log.id !== "" && (
+                                            <>
+                                                <span className="font-mono">{log.id.substring(0, 8)}</span>
+                                                <span>•</span>
+                                            </>
+                                        )}
+                                        {log.printerId != null && log.printerId !== "" && (
+                                            <>
+                                                <span title="Printer ID" className="font-mono">Printer: {log.printerId}</span>
+                                                <span>•</span>
+                                            </>
+                                        )}
+                                        {log.serverId != null && log.serverId !== "" && (
+                                            <>
+                                                <span title="Server ID" className="font-mono">Server: {log.serverId}</span>
+                                                <span>•</span>
+                                            </>
+                                        )}
                                         <span>{formatTime(log.timestamp)}</span>
                                         <span>•</span>
-                                        <span>{log.timestamp.toLocaleString()}</span>
+                                        <span>{log.timestamp != null ? log.timestamp.toLocaleString() : "—"}</span>
                                     </div>
                                 </div>
                             </div>
