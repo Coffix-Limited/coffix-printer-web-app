@@ -21,6 +21,7 @@ const NAV_ITEMS: NavItem[] = [
   { name: "Logs", href: "/logs" },
   { name: "Templates", href: "/templates" },
   { name: "Setup", href: "/setup" },
+  { name: "Users", href: "/users" },
 ];
 
 export default function SideBar() {

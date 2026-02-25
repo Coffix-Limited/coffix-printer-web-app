@@ -1,9 +1,8 @@
 "use client"
 
-import { onAuthStateChanged, User } from "firebase/auth"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { auth } from "../utils/firebase.browser"
+import { useAuthStore } from "../store/useAuthStore"
 import SideBar from "./SideBar"
 
 type Props = {
@@ -11,15 +10,14 @@ type Props = {
 }
 
 const ClientWrapper: React.FC<Props> = ({ children }) => {
-    const [user, setUser] = useState<User | null | undefined>(undefined)
+    const {user, subscribe} = useAuthStore((s) => s)
     const router = useRouter()
     const pathname = usePathname()
     const isLoginPage = pathname === "/login"
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, setUser)
-        return () => unsubscribe()
-    }, [])
+        return subscribe()
+    }, [subscribe])
 
     useEffect(() => {
         if (user === undefined) return
