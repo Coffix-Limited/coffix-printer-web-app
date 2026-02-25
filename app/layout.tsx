@@ -31,7 +31,7 @@ export default function RootLayout({
         style={{ backgroundColor: COFFEE_PALETTE.background }}
       >
         <ClientWrapper>
-        {children}
+          {children}
         </ClientWrapper>
       </body>
     </html>

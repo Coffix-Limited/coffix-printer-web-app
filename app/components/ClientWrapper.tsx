@@ -1,9 +1,9 @@
 "use client"
 
-import { onAuthStateChanged } from "firebase/auth"
-import { useEffect } from "react"
+import { onAuthStateChanged, User } from "firebase/auth"
+import { useEffect, useState } from "react"
+import { useRouter, usePathname } from "next/navigation"
 import { auth } from "../utils/firebase.browser"
-import { usePathname } from "next/navigation"
 import SideBar from "./SideBar"
 
 type Props = {
@@ -11,32 +11,42 @@ type Props = {
 }
 
 const ClientWrapper: React.FC<Props> = ({ children }) => {
-    const pathname = usePathname();
-    const isLoginPage = pathname === "/login";
+    const [user, setUser] = useState<User | null | undefined>(undefined)
+    const router = useRouter()
+    const pathname = usePathname()
+    const isLoginPage = pathname === "/login"
 
     useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const uid = user.uid;
-                console.log("User signed in:", uid);
-            } else {
-                console.log("No user signed in");
-            }
-        });
-    }, []);
+        const unsubscribe = onAuthStateChanged(auth, setUser)
+        return () => unsubscribe()
+    }, [])
 
-    if (isLoginPage) {
-        return <>{children}</>;
+    useEffect(() => {
+        if (user === undefined) return
+        if (!user && !isLoginPage) router.replace("/login")
+        if (user && isLoginPage) router.replace("/")
+    }, [user, isLoginPage, router])
+
+    if (user === undefined) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-pulse text-[#6F4E37]">Loading...</div>
+            </div>
+        )
     }
+    if (!user && !isLoginPage) return null
+    if (user && isLoginPage) return null
+
+    if (isLoginPage) return <>{children}</>
 
     return (
         <div className="min-h-screen flex flex-col md:flex-row">
             <SideBar />
             <main className="flex-1 w-full md:ml-64 transition-all duration-300">
-        {children}
+                {children}
             </main>
-    </div>
-    );
+        </div>
+    )
 }
 
 export default ClientWrapper;

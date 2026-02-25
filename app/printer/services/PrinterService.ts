@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/app/utils/firebase.browser";
 import { Printer } from "../interface/Printer";
+import { DEFAULT_LINE_DECORATION_ID } from "@/app/constants/constant";
 
 export const PrinterService = {
   subscribeToPrinters(
@@ -82,7 +83,7 @@ export const PrinterService = {
           label,
           location,
           isOnline: false,
-          lineDecorationId: "",
+          lineDecorationId: DEFAULT_LINE_DECORATION_ID,
           isVisible: true,
           createdAt: serverTimestamp(),
         },
