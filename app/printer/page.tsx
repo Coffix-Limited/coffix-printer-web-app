@@ -225,7 +225,7 @@ export default function PrinterPage() {
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2" style={{ color: COFFEE_PALETTE.textSecondary }}>
                     <MapPin className="w-4 h-4" />
-                    <span>Location: {printer.label}</span>
+                    <span>Location: {printer.location}</span>
                   </div>
                 </div>
 
