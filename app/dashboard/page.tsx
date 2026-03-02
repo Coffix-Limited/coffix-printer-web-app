@@ -59,7 +59,7 @@ export default function DashboardPage() {
             {/* Top Stats Grid: 1 col on mobile, 2 on tablet, 4 on desktop */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6 mb-8">
                 <StatusCard title="Total Printers" value={printers.length.toString()} subtext="Across all locations" icon="🖨️" />
-                <StatusCard title="Online Now" value="9" subtext="3 offline" statusDot />
+                <StatusCard title="Online Now" value={printers.filter((printer: Printer) => printer.isOnline).length.toString()} subtext={`${printers.length - printers.filter((printer: Printer) => printer.isOnline).length} offline`} statusDot />
             </div>
 
             {/* Main Content: Stacks on mobile/tablet, Side-by-side on desktop */}

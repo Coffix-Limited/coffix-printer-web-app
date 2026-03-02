@@ -31,6 +31,7 @@ export const LogService = {
           } else {
             const logs = snapshot.docs.map((doc) => {
               const data = doc.data();
+              
 
               return {
                 id: doc.id,
