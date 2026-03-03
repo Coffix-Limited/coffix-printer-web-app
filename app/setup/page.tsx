@@ -43,7 +43,7 @@ export default function SetupPage() {
       setSaveMessage("✅ Printer saved successfully!");
 
       setPrinters();
-      
+
       setTimeout(() => {
         setSaveMessage("");
         setPrinterId("");
@@ -52,8 +52,8 @@ export default function SetupPage() {
       }, 2000);
     } catch (error) {
       console.error("Failed to save printer:", error);
-      setSaveMessage("❌ Failed to save printer");
-      setTimeout(() => setSaveMessage(""), 3000);
+      setSaveMessage("❌ Failed to save printer. " + (error as Error).message);
+      setTimeout(() => setSaveMessage(""), 4000);
     } finally {
       setSaving(false);
     }
@@ -69,9 +69,9 @@ export default function SetupPage() {
       </div>
 
       {saveMessage && (
-        <div className="mb-6 p-4 rounded-lg border" style={{ 
+        <div className="mb-6 p-4 rounded-lg border" style={{
           backgroundColor: saveMessage.includes('✅') ? '#E8F5E9' : '#FFEBEE',
-          borderColor: saveMessage.includes('✅') ? COFFEE_PALETTE.success : COFFEE_PALETTE.error 
+          borderColor: saveMessage.includes('✅') ? COFFEE_PALETTE.success : COFFEE_PALETTE.error
         }}>
           <p className="text-sm font-medium">{saveMessage}</p>
         </div>
@@ -83,7 +83,7 @@ export default function SetupPage() {
             <Printer size={20} />
             Printer Information
           </h3>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
@@ -95,7 +95,7 @@ export default function SetupPage() {
                 onChange={(e) => setPrinterId(e.target.value)}
                 placeholder="e.g. VOS"
                 className="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2"
-                style={{ 
+                style={{
                   borderColor: COFFEE_PALETTE.border,
                   color: COFFEE_PALETTE.textPrimary
                 }}
@@ -113,7 +113,7 @@ export default function SetupPage() {
                 onChange={(e) => setLabel(e.target.value)}
                 placeholder="e.g., Auckland, Tauranga, Hamilton"
                 className="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2"
-                style={{ 
+                style={{
                   borderColor: COFFEE_PALETTE.border,
                   color: COFFEE_PALETTE.textPrimary
                 }}
@@ -131,7 +131,7 @@ export default function SetupPage() {
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g., Auckland City"
                 className="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2"
-                style={{ 
+                style={{
                   borderColor: COFFEE_PALETTE.border,
                   color: COFFEE_PALETTE.textPrimary
                 }}

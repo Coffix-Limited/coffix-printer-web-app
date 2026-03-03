@@ -6,7 +6,9 @@ import {
   updateDoc,
   deleteDoc,
   query,
+  where,
   orderBy,
+  getDocs,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/app/utils/firebase.browser";
@@ -74,6 +76,14 @@ export const PrinterService = {
     location: string;
   }): Promise<void> {
     try {
+      const q = query(
+        collection(db, "printer"),
+        where("printerId", "==", printerId.trim()),
+      );
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        throw new Error(`Printer "${printerId.trim()}" already exists`);
+      }
       const docRef = doc(collection(db, "printer"));
       await setDoc(
         docRef,
