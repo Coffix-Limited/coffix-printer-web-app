@@ -14,7 +14,7 @@ function mergePrintersWithServers(
     const connected: PosServer[] = servers
       .filter(
         (server) =>
-          server.printerDocId === p.id || server.printerId === p.printerId,
+         server.printerId === p.id
       )
       .sort((a, b) => {
         const toMs = (d: Date | { toDate?: () => Date } | undefined) => {
@@ -39,9 +39,11 @@ function mergePrintersWithServers(
 interface PrinterStore {
   printers: Printer[];
   unsubscribe: Unsubscribe | null;
+  selectedPrinter: Printer | null;
   loading: boolean;
   error: string | null;
   setPrinters: () => void;
+  setPrinter: (printer: Printer) => void;
   deletePrinter: (printerId: string) => Promise<void>;
   setPrinterVisible: (printerId: string, isVisible: boolean) => Promise<void>;
 }
@@ -49,6 +51,7 @@ interface PrinterStore {
 export const usePrinterStore = create<PrinterStore>((set, get) => ({
   printers: [],
   unsubscribe: null,
+  selectedPrinter: null,
   loading: false,
   error: null,
   setPrinters: () => {
@@ -106,6 +109,9 @@ export const usePrinterStore = create<PrinterStore>((set, get) => ({
       unsubPrinter();
     };
     set({ unsubscribe: unsubscribeListener });
+  },
+  setPrinter: (printer: Printer) => {
+    set({ selectedPrinter: printer });
   },
   deletePrinter: async (printerId: string) => {
     await PrinterService.deletePrinter(printerId);

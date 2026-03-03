@@ -20,6 +20,7 @@ export const LineDecorationService = {
                     const data = doc.data();
                     return {
                         id: doc.id,
+                        templateName: data.templateName || "",
                         lines: data.lines || [],
                     } as LineDecoration;
                 });

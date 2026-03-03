@@ -88,8 +88,8 @@ export const PrinterService = {
         templateName: DEFAULT_TEMPLATE_NAME,
         isVisible: true,
         createdAt: serverTimestamp(),
-      }
-      
+      };
+
       const docRef = doc(collection(db, "printer"), newPrinter.id);
       await setDoc(
         docRef,
@@ -115,10 +115,8 @@ export const PrinterService = {
       const printerRef = doc(db, "printer", printer.id);
       await updateDoc(printerRef, {
         location: printer.location,
-        isOnline: printer.isOnline,
         templateName: printer.templateName,
         isVisible: printer.isVisible ?? true,
-        createdAt: serverTimestamp(),
       });
       console.log("✅ Printer updated:", printer.id);
     } catch (error) {

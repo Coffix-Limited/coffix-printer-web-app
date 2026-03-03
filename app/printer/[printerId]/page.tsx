@@ -28,18 +28,16 @@ export default function PrinterDetailsPage() {
     const router = useRouter();
     const printerId = params.printerId as string;
 
-    const { printers, setPrinters, setPrinterVisible, loading: printersLoading } = usePrinterStore();
+    const { printers, setPrinters, selectedPrinter, setPrinter, setPrinterVisible, loading: printersLoading } = usePrinterStore();
     const { lineDecorations, setLineDecorations, loading: templatesLoading } = useTemplateStore();
 
-    const [printer, setPrinter] = useState<Printer | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [copyMessage, setCopyMessage] = useState("");
     const [formData, setFormData] = useState({
-        printerId: "",
-        label: "",
+        id: "",
         location: "",
-        lineDecorationId: ""
+        templateName: ""
     });
 
     useEffect(() => {
@@ -49,30 +47,27 @@ export default function PrinterDetailsPage() {
 
     useEffect(() => {
         if (printerId && printers.length > 0) {
-            const foundPrinter = printers.find(p => p.id === printerId);
+            const foundPrinter: Printer | undefined = printers.find(p => p.id === printerId);
             if (foundPrinter) {
                 setPrinter(foundPrinter);
                 setFormData({
-                    printerId: foundPrinter.printerId || "",
-                    label: foundPrinter.label || "",
+                    id: foundPrinter.id || "",
                     location: foundPrinter.location || "",
-                    lineDecorationId: foundPrinter.lineDecorationId || ""
+                    templateName: foundPrinter.templateName || ""
                 });
             }
         }
-    }, [printerId, printers]);
+    }, [printerId, printers, setPrinter]);
 
     const handleSave = async () => {
-        if (!printer) return;
+        if (!selectedPrinter) return;
 
         setIsSaving(true);
         try {
             const updatedPrinter: Printer = {
-                ...printer,
-                printerId: formData.printerId.trim(),
-                label: formData.label,
+                ...selectedPrinter,
                 location: formData.location,
-                lineDecorationId: formData.lineDecorationId
+                templateName: formData.templateName
             };
             await PrinterService.updatePrinter(updatedPrinter);
             setIsEditing(false);
@@ -86,8 +81,8 @@ export default function PrinterDetailsPage() {
     };
 
     const handleDownloadQR = () => {
-        if (!printer) return;
-        const svg = document.getElementById(`qr-code-${printer.id}`);
+        if (!selectedPrinter) return;
+        const svg = document.getElementById(`qr-code-${selectedPrinter.id}`);
         if (!svg) return;
 
         const svgData = new XMLSerializer().serializeToString(svg);
@@ -102,7 +97,7 @@ export default function PrinterDetailsPage() {
             const pngFile = canvas.toDataURL("image/png");
 
             const downloadLink = document.createElement("a");
-            downloadLink.download = `printer-${printer.id}-qrcode.png`;
+            downloadLink.download = `printer-${selectedPrinter.id}-qrcode.png`;
             downloadLink.href = pngFile;
             downloadLink.click();
         };
@@ -116,12 +111,12 @@ export default function PrinterDetailsPage() {
         setTimeout(() => setCopyMessage(""), 2000);
     };
 
-    const isVisible = printer?.isVisible ?? true;
+    const isVisible = selectedPrinter?.isVisible ?? true;
     const handleToggleVisible = async () => {
-        if (!printer) return;
+        if (!selectedPrinter) return;
         const next = !isVisible;
-        setPrinter(prev => prev ? { ...prev, isVisible: next } : null);
-        await setPrinterVisible(printer.id, next);
+        setPrinter({ ...selectedPrinter, isVisible: next });
+        await setPrinterVisible(selectedPrinter.id, next);
     };
 
     if (printersLoading || templatesLoading) {
@@ -137,7 +132,7 @@ export default function PrinterDetailsPage() {
         );
     }
 
-    if (!printer) {
+    if (!selectedPrinter) {
         return (
             <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
                 <div className="p-12 rounded-lg border-2 border-dashed text-center"
@@ -161,8 +156,8 @@ export default function PrinterDetailsPage() {
         );
     }
 
-    const qrCode = `https://coffix.co.nz?printerId=${printer.id}&lineDecorationId=${printer.lineDecorationId || ""}`;
-    const selectedTemplate = lineDecorations.find(t => t.id === printer.lineDecorationId);
+    const qrCode = `https://coffix.co.nz?printerId=${selectedPrinter.id}&templateName=${selectedPrinter.templateName}`;
+    const selectedTemplate = lineDecorations.find(t => t.templateName === selectedPrinter.templateName);
 
     return (
         <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
@@ -208,29 +203,24 @@ export default function PrinterDetailsPage() {
                             </div>
                             <div>
                                 <h3 className="font-bold text-xl mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
-                                    {isEditing ? "Edit Printer" : printer.label}
+                                    {isEditing ? "Edit Printer" : selectedPrinter.id}
                                 </h3>
                                 <p className="text-sm font-mono" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                    Printer ID: {printer.printerId || printer.id}
+                                    Printer ID: {selectedPrinter.location}
                                 </p>
-                                {printer.printerId && (
-                                    <p className="text-xs font-mono mt-0.5" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                        Doc ID: {printer.id}
-                                    </p>
-                                )}
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2">
                                 <Circle
                                     className="w-3 h-3 fill-current"
-                                    style={{ color: printer.isOnline ? COFFEE_PALETTE.success : COFFEE_PALETTE.error }}
+                                    style={{ color: selectedPrinter.isOnline ? COFFEE_PALETTE.success : COFFEE_PALETTE.error }}
                                 />
                                 <span
                                     className="text-sm font-medium"
-                                    style={{ color: printer.isOnline ? COFFEE_PALETTE.success : COFFEE_PALETTE.error }}
+                                    style={{ color: selectedPrinter.isOnline ? COFFEE_PALETTE.success : COFFEE_PALETTE.error }}
                                 >
-                                    {printer.isOnline ? 'Online' : 'Offline'}
+                                    {selectedPrinter.isOnline ? 'Online' : 'Offline'}
                                 </span>
                             </div>
                             <button
@@ -257,13 +247,7 @@ export default function PrinterDetailsPage() {
                                 <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
                                     Printer ID
                                 </label>
-                                <p className="text-base font-mono" style={{ color: COFFEE_PALETTE.textPrimary }}>{printer.printerId || "—"}</p>
-                            </div>
-                            <div>
-                                <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                    Label
-                                </label>
-                                <p className="text-base" style={{ color: COFFEE_PALETTE.textPrimary }}>{printer.label || "—"}</p>
+                                <p className="text-base font-mono" style={{ color: COFFEE_PALETTE.textPrimary }}>{selectedPrinter.id || "—"}</p>
                             </div>
                             <div>
                                 <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
@@ -271,15 +255,15 @@ export default function PrinterDetailsPage() {
                                 </label>
                                 <div className="flex items-center gap-2">
                                     <MapPin className="w-4 h-4" style={{ color: COFFEE_PALETTE.textSecondary }} />
-                                    <p className="text-base" style={{ color: COFFEE_PALETTE.textPrimary }}>{printer.location || "—"}</p>
+                                    <p className="text-base" style={{ color: COFFEE_PALETTE.textPrimary }}>{selectedPrinter.location || "—"}</p>
                                 </div>
                             </div>
                             <div>
                                 <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                    Receipt Template
+                                    Print Template
                                 </label>
                                 <p className="text-base" style={{ color: COFFEE_PALETTE.textPrimary }}>
-                                    {selectedTemplate ? `Template ${selectedTemplate.id.slice(0, 8)}` : "No template assigned"}
+                                    {selectedTemplate ? `${selectedTemplate.templateName}` : "No template assigned"}
                                 </p>
                             </div>
                             <div className="flex gap-2 mt-4">
@@ -313,34 +297,17 @@ export default function PrinterDetailsPage() {
                                     Printer ID
                                 </label>
                                 <input
+                                    disabled={true}
                                     type="text"
-                                    value={formData.printerId}
-                                    onChange={(e) => setFormData({ ...formData, printerId: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-md border text-base font-mono"
+                                    value={formData.id}
+                                    onChange={(e) => setFormData({ ...formData, id: e.target.value })}
+                                    className="w-full px-3 py-2 rounded-md border text-base font-mono disabled:opacity-50 disabled:cursor-not-allowed"
                                     style={{
                                         borderColor: COFFEE_PALETTE.border,
                                         backgroundColor: COFFEE_PALETTE.cardBg,
                                         color: COFFEE_PALETTE.textPrimary
                                     }}
                                     placeholder="e.g. VOS"
-                                />
-                                <p className="text-xs mt-1" style={{ color: COFFEE_PALETTE.textSecondary }}>Short ID (different from document ID)</p>
-                            </div>
-                            <div>
-                                <label className="text-xs font-semibold uppercase mb-2 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                    Label
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.label}
-                                    onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                                    className="w-full px-3 py-2 rounded-md border text-base"
-                                    style={{
-                                        borderColor: COFFEE_PALETTE.border,
-                                        backgroundColor: COFFEE_PALETTE.cardBg,
-                                        color: COFFEE_PALETTE.textPrimary
-                                    }}
-                                    placeholder="Enter printer label"
                                 />
                             </div>
                             <div>
@@ -362,11 +329,11 @@ export default function PrinterDetailsPage() {
                             </div>
                             <div>
                                 <label className="text-xs font-semibold uppercase mb-2 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                    Receipt Template
+                                    Print Template
                                 </label>
                                 <select
-                                    value={formData.lineDecorationId}
-                                    onChange={(e) => setFormData({ ...formData, lineDecorationId: e.target.value })}
+                                    value={formData.templateName}
+                                    onChange={(e) => setFormData({ ...formData, templateName: e.target.value })}
                                     className="w-full px-3 py-2 rounded-md border text-base"
                                     style={{
                                         borderColor: COFFEE_PALETTE.border,
@@ -374,10 +341,9 @@ export default function PrinterDetailsPage() {
                                         color: COFFEE_PALETTE.textPrimary
                                     }}
                                 >
-                                    <option value="">No template</option>
                                     {lineDecorations.map((template) => (
                                         <option key={template.id} value={template.id}>
-                                            Template {template.id.slice(0, 8)}
+                                            {template.templateName.slice(0, 8)}
                                         </option>
                                     ))}
                                 </select>
@@ -408,10 +374,9 @@ export default function PrinterDetailsPage() {
                                     onClick={() => {
                                         setIsEditing(false);
                                         setFormData({
-                                            printerId: printer.printerId || "",
-                                            label: printer.label || "",
-                                            location: printer.location || "",
-                                            lineDecorationId: printer.lineDecorationId || ""
+                                            id: selectedPrinter.id || "",
+                                            location: selectedPrinter.location || "",
+                                            templateName: selectedPrinter.templateName || ""
                                         });
                                     }}
                                     className="px-4 py-2 rounded-md text-sm font-medium transition-opacity hover:opacity-80"
@@ -441,7 +406,7 @@ export default function PrinterDetailsPage() {
                             borderColor: COFFEE_PALETTE.border
                         }}>
                             <QRCodeReact
-                                id={`qr-code-${printer.id}`}
+                                id={`qr-code-${selectedPrinter?.id || ""}`}
                                 value={qrCode}
                                 size={200}
                                 level="H"

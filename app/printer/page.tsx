@@ -157,7 +157,7 @@ export default function PrinterPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {filteredPrinters.map((printer: Printer) => {
-            const qrCode = `https://coffix.co.nz?printerId=${printer.id}&lineDecorationId=${printer.templateName}`;
+            const qrCode = `https://coffix.co.nz?printerId=${printer.id}&templateName=${printer.templateName}`;
             const isVisible = printer.isVisible ?? true;
             return (
               <div
@@ -177,9 +177,12 @@ export default function PrinterPage() {
                       <p className="text-sm font-mono break-all" style={{ color: COFFEE_PALETTE.textSecondary }}>
                         Printer ID: {printer.id}
                       </p>
-                      <p className="text-xs font-mono opacity-75 break-all" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                        Doc: {printer.id}
-                      </p>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center gap-2" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                          <MapPin className="w-4 h-4" />
+                          <span>Location: {printer.location}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
@@ -217,12 +220,7 @@ export default function PrinterPage() {
                                 </div> */}
                 </div>
 
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                    <MapPin className="w-4 h-4" />
-                    <span>Location: {printer.location}</span>
-                  </div>
-                </div>
+
 
                 <div className="mt-4 pt-4 border-t space-y-2" style={{ borderColor: COFFEE_PALETTE.border }}>
                   <button

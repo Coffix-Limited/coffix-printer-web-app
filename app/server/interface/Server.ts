@@ -13,11 +13,9 @@ export interface PosServer {
   connectionType?: ConnectionType;
   deviceInfo?: DeviceInfo;
   printerConnected?: boolean;
-  printerDocId?: string;
   printerMacAddress?: string;
   printerIpAddress?: string;
-  printerId?: string;
+  printerId?: string; // Printer ID (e.g. AUK, TUR, etc.)
   updatedAt?: Date;
   pollingInterval?: number;
-  scheduledAt?: Date;
 }
