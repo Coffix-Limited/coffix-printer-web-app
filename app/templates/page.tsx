@@ -45,14 +45,14 @@ export default function TemplatesPage() {
             Manage and configure receipt printing templates • {lineDecorations.length} template{lineDecorations.length !== 1 ? 's' : ''}
           </p>
         </div>
-        {/* <button
+        <button
           onClick={handleCreateTemplate}
           className="px-4 py-2 rounded-md font-medium text-white transition-opacity hover:opacity-90 flex items-center gap-2"
           style={{ backgroundColor: COFFEE_PALETTE.primary }}
         >
           <Plus size={18} />
           <span className="hidden sm:inline">New Template</span>
-        </button> */}
+        </button>
       </div>
 
       {error && (
@@ -110,7 +110,7 @@ export default function TemplatesPage() {
                   <div className="flex items-center gap-2">
                     <FileText className="w-5 h-5" style={{ color: COFFEE_PALETTE.primary }} />
                     <h3 className="font-semibold text-base" style={{ color: COFFEE_PALETTE.textPrimary }}>
-                      Template {lineDecoration.id.slice(0, 8)}
+                      Template {lineDecoration.templateName}
                     </h3>
                   </div>
                   <span className="text-xs px-2 py-1 rounded" style={{
@@ -142,7 +142,7 @@ export default function TemplatesPage() {
                   <Edit size={14} />
                   Edit
                 </button>
-                {/* <button
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDeleteTemplate(lineDecoration.id);
@@ -159,7 +159,7 @@ export default function TemplatesPage() {
                   ) : (
                     <Trash2 className="w-4 h-4" />
                   )}
-                </button> */}
+                </button>
               </div>
             </div>
           ))}

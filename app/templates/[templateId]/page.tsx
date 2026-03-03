@@ -9,7 +9,7 @@ import { useTemplateStore } from "@/app/templates/store/useTemplateStore";
 import TemplatePreview from "@/app/templates/components/TemplatePreview";
 
 const DEFAULT_LINE: LineStyle = {
-  fontSize: 4,
+  fontSize: 1,
   alignment: LineAlignment.LEFT,
   isBold: false
 };
@@ -26,6 +26,7 @@ export default function TemplateDetailPage() {
   const [selectedLine, setSelectedLine] = useState<number>(0);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [templateName, setTemplateName] = useState<string>("");
 
   useEffect(() => {
     const loadTemplate = async () => {
@@ -33,7 +34,10 @@ export default function TemplateDetailPage() {
         const template = await getTemplate(templateId);
         if (template && template.lines) {
           setLines(template.lines);
+          setTemplateName(template.templateName || "");
         }
+      } else {
+        setTemplateName("");
       }
       setLoading(false);
     };
@@ -51,7 +55,8 @@ export default function TemplateDetailPage() {
     try {
       const template: LineDecoration = {
         id: templateId === 'new' ? Date.now().toString() : templateId,
-        lines: lines
+        lines: lines,
+        templateName: templateName,
       };
       await saveTemplate(template);
       router.push('/templates');
@@ -90,6 +95,19 @@ export default function TemplateDetailPage() {
         <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
           Configure line styles for receipt printing • 15 lines
         </p>
+        <div className="mt-3 max-w-md">
+          <label className="block text-sm font-medium mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
+            Template Name
+          </label>
+          <input
+            type="text"
+            value={templateName}
+            onChange={(e) => setTemplateName(e.target.value)}
+            placeholder="e.g. Default Receipt"
+            className="w-full px-3 py-2 rounded-md border text-sm"
+            style={{ borderColor: COFFEE_PALETTE.border, color: COFFEE_PALETTE.textPrimary }}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

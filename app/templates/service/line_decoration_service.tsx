@@ -20,8 +20,9 @@ export const LineDecorationService = {
                     const data = doc.data();
                     return {
                         id: doc.id,
-                        templateName: data.templateName || "",
-                        lines: data.lines || [],
+                        // Prefer templateName, fall back to legacy `name`
+                        templateName: data.templateName || data.name || "",
+                        lines: data.lines || DEFAULT_LINES,
                     } as LineDecoration;
                 });
                 callback(lineDecorations);
@@ -45,7 +46,7 @@ export const LineDecorationService = {
     async createTemplate(name: string): Promise<string> {
         try {
             const docRef = await addDoc(collection(db, "lineDecoration"), {
-                name,
+                templateName: name,
                 lines: DEFAULT_LINES,
                 createdAt: new Date(),
                 updatedAt: new Date()
@@ -67,6 +68,7 @@ export const LineDecorationService = {
                 const data = docSnap.data();
                 return {
                     id: docSnap.id,
+                    templateName: data.templateName || data.name || "",
                     lines: data.lines || DEFAULT_LINES
                 } as LineDecoration;
             }
@@ -81,6 +83,7 @@ export const LineDecorationService = {
         try {
             const docRef = doc(db, "lineDecoration", template.id);
             await setDoc(docRef, {
+                templateName: template.templateName,
                 lines: template.lines,
                 updatedAt: new Date()
             }, { merge: true });
