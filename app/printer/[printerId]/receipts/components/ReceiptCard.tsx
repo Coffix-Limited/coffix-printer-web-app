@@ -131,28 +131,9 @@ export default function ReceiptCard({
                                             color: COFFEE_PALETTE.textPrimary
                                         }}
                                     />
-                                    {formData.lines.length > 1 && (
-                                        <button
-                                            onClick={() => onRemoveLine(index)}
-                                            className="px-2 py-2 rounded-md transition-opacity hover:opacity-80 shrink-0"
-                                            style={{ backgroundColor: COFFEE_PALETTE.error, color: '#FFFFFF' }}
-                                        >
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    )}
                                 </div>
                             ))}
                         </div>
-                        <button
-                            onClick={onAddLine}
-                            className="mt-2 px-3 py-1 rounded-md text-xs font-medium transition-opacity hover:opacity-90"
-                            style={{
-                                backgroundColor: COFFEE_PALETTE.background,
-                                color: COFFEE_PALETTE.primary
-                            }}
-                        >
-                            + Add Line
-                        </button>
                     </div>
                     <div className="flex gap-2 mt-auto pt-4">
                         <button
@@ -194,12 +175,9 @@ export default function ReceiptCard({
                                     {queue.status}
                                 </span>
                                 <span className="text-xs font-mono" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                    {queue.id.slice(0, 8)}
+                                    {queue.printerId}
                                 </span>
                             </div>
-                            <p className="text-xs" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                                Created: {queue.createdAt.toLocaleString()}
-                            </p>
                             {queue.printTime && (
                                 <p className="text-xs" style={{ color: COFFEE_PALETTE.textSecondary }}>
                                     Print at: {new Date(queue.printTime).toLocaleString()}

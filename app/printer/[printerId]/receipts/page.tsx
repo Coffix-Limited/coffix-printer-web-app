@@ -10,6 +10,7 @@ import ReceiptCard from "./components/ReceiptCard";
 import { SAMPLE_LINES } from "@/app/templates/constants";
 import { usePrinterStore } from "../../store/usePrinterStore";
 import type { Printer } from "../../interface/Printer";
+import { useTemplateStore } from "@/app/templates/store/useTemplateStore";
 
 const PRINT_TIME_OPTIONS = [
     { label: "Now", minutes: 0 },
@@ -23,7 +24,7 @@ const PRINT_TIME_OPTIONS = [
 export default function ReceiptsPage() {
     const params = useParams();
     const router = useRouter();
-    const printerDocId = params.printerId as string;
+    const printerId = params.printerId as string;
 
     const {
         printQueue,
@@ -35,10 +36,12 @@ export default function ReceiptsPage() {
     } = usePrintQueueStore();
 
     const { printers, setPrinters } = usePrinterStore();
+    const { lineDecorations, setLineDecorations } = useTemplateStore();
 
     const [editingId, setEditingId] = useState<string | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [statusFilter, setStatusFilter] = useState<PrintQueueStatus | 'ALL'>('ALL');
+    const [templateNameFilter, setTemplateNameFilter] = useState<string | 'DEFAULT'>('DEFAULT');
     const [selectedPrintTimeOption, setSelectedPrintTimeOption] = useState<number>(0);
     const [formData, setFormData] = useState({
         status: PrintQueueStatus.PENDING,
@@ -47,15 +50,10 @@ export default function ReceiptsPage() {
     });
 
     useEffect(() => {
-        setPrinters();
-    }, [setPrinters]);
+        setLineDecorations();
+        setPrintQueue(printerId);
+    }, [setLineDecorations, setPrintQueue, printerId]);
 
-    useEffect(() => {
-        if (!printerDocId) return;
-        const found = printers.find((p: Printer) => p.id === printerDocId);
-        // const idForQueue = found?.printerId ?? printerDocId;
-        // setPrintQueue(idForQueue);
-    }, [printerDocId, printers, setPrintQueue]);
 
     const filteredQueue = statusFilter === 'ALL'
         ? printQueue
@@ -65,17 +63,13 @@ export default function ReceiptsPage() {
 
     const handleCreate = async () => {
         try {
-            const found = printers.find((p: Printer) => p.id === printerDocId);
-            // const effectivePrinterId = found?.printerId ?? printerDocId;
-            // const printerName = found?.label ?? "";
-            // await createPrintQueue({
-            //     printerId: effectivePrinterId,
-            //     printerName,
-            //     createdAt: new Date(),
-            //     status: formData.status,
-            //     lines: formData.lines,
-            //     printTime: formData.printTime,
-            // });
+            await createPrintQueue({
+                printerId: printerId,
+                status: formData.status,
+                lines: formData.lines,
+                printTime: formData.printTime,
+                templateName: templateNameFilter,
+            });
             setIsCreating(false);
             setFormData({
                 status: PrintQueueStatus.PENDING,
@@ -193,7 +187,7 @@ export default function ReceiptsPage() {
         <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
             <div className="mb-6 flex items-center gap-4">
                 <button
-                    onClick={() => router.push(`/printer/${printerDocId}`)}
+                    onClick={() => router.push(`/printer/${printerId}`)}
                     className="p-2 rounded-md transition-opacity hover:opacity-80"
                     style={{ backgroundColor: COFFEE_PALETTE.background }}
                 >
@@ -278,6 +272,23 @@ export default function ReceiptsPage() {
                                     <option key={status} value={status}>{status}</option>
                                 ))}
                             </select>
+                            <label className="text-xs font-semibold uppercase mb-1 mt-4 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                Template Name
+                            </label>
+                            <select
+                                value={templateNameFilter}
+                                onChange={(e) => setTemplateNameFilter(e.target.value as string | 'DEFAULT')}
+                                className="px-3 py-2 rounded-md border text-sm"
+                                style={{
+                                    backgroundColor: COFFEE_PALETTE.cardBg,
+                                    borderColor: COFFEE_PALETTE.border,
+                                    color: COFFEE_PALETTE.textPrimary
+                                }}
+                            >
+                                {lineDecorations.map(template => (
+                                    <option key={template.id} value={template.templateName}>{template.templateName}</option>
+                                ))}
+                            </select>
                         </div>
                         <div>
                             <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
@@ -338,7 +349,7 @@ export default function ReceiptsPage() {
                                     )} */}
                                 </div>
                             ))}
-                            <button
+                            {/* <button
                                 type="button"
                                 onClick={addLine}
                                 className="mt-2 px-3 py-1.5 rounded-md text-sm font-medium transition-opacity hover:opacity-90"
@@ -348,7 +359,7 @@ export default function ReceiptsPage() {
                                 }}
                             >
                                 + Add line
-                            </button>
+                            </button> */}
                         </div>
                         <div className="flex gap-2">
                             <button

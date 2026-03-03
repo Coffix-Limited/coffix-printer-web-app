@@ -35,20 +35,13 @@ export const PrintQueueService = {
           } else {
             const printQueue = snapshot.docs.map((doc) => {
               const data = doc.data();
-              const printTimeRaw = data.printTime ?? data.serviceTime;
-              const printTime = printTimeRaw?.toDate
-                ? printTimeRaw.toDate()
-                : printTimeRaw
-                  ? new Date(printTimeRaw)
-                  : new Date();
               return {
                 id: doc.id,
                 printerId: data.printerId,
-                printerName: data.printerName ?? undefined,
-                createdAt: data.createdAt?.toDate() || new Date(),
                 status: data.status || PrintQueueStatus.PENDING,
                 lines: data.lines || [],
-                printTime,
+                templateName: data.templateName || "",
+                printTime: data.printTime?.toDate() || new Date(),
               };
             });
             console.log("✅ Print Queues loaded:", printQueue.length);
@@ -83,11 +76,10 @@ export const PrintQueueService = {
       // const docId = docRef.id;
       await setDoc(docRef, {
         printerId: printQueue.printerId,
-        ...(printQueue.printerName != null && { printerName: printQueue.printerName }),
-        createdAt: Timestamp.fromDate(printQueue.createdAt),
         status: printQueue.status,
         lines: printQueue.lines,
         printTime: Timestamp.fromDate(printQueue.printTime),
+        templateName: printQueue.templateName,
       });
       console.log("✅ Print queue created:", docRef.id);
       return docRef.id;
@@ -102,11 +94,10 @@ export const PrintQueueService = {
       const printQueueRef = doc(db, "printQueue", printQueue.id);
       await updateDoc(printQueueRef, {
         printerId: printQueue.printerId,
-        ...(printQueue.printerName != null && { printerName: printQueue.printerName }),
-        createdAt: Timestamp.fromDate(printQueue.createdAt),
         status: printQueue.status,
         lines: printQueue.lines,
         printTime: Timestamp.fromDate(printQueue.printTime),
+        templateName: printQueue.templateName,
       });
       console.log("✅ Print queue updated:", printQueue.id);
     } catch (error) {

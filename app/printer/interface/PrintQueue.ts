@@ -8,11 +8,9 @@ export enum PrintQueueStatus {
 
 export interface PrintQueue {
   id: string;
-  printerId: string;
-  /** Optional for backward compatibility with existing docs */
-  printerName?: string;
-  createdAt: Date;
+  printerId: string; // AUK, TUR, etc.
   status: PrintQueueStatus;
   lines: string[];
   printTime: Date;
+  templateName: string;
 }
