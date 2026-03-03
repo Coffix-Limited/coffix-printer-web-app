@@ -8,6 +8,8 @@ import { COFFEE_PALETTE } from "@/app/constants/theme";
 import { ArrowLeft, Plus, Save, X } from "lucide-react";
 import ReceiptCard from "./components/ReceiptCard";
 import { SAMPLE_LINES } from "@/app/templates/constants";
+import { usePrinterStore } from "../../store/usePrinterStore";
+import type { Printer } from "../../interface/Printer";
 
 const PRINT_TIME_OPTIONS = [
     { label: "Now", minutes: 0 },
@@ -21,7 +23,7 @@ const PRINT_TIME_OPTIONS = [
 export default function ReceiptsPage() {
     const params = useParams();
     const router = useRouter();
-    const printerId = params.printerId as string;
+    const printerDocId = params.printerId as string;
 
     const {
         printQueue,
@@ -31,6 +33,8 @@ export default function ReceiptsPage() {
         deletePrintQueue,
         loading
     } = usePrintQueueStore();
+
+    const { printers, setPrinters } = usePrinterStore();
 
     const [editingId, setEditingId] = useState<string | null>(null);
     const [isCreating, setIsCreating] = useState(false);
@@ -43,10 +47,15 @@ export default function ReceiptsPage() {
     });
 
     useEffect(() => {
-        if (printerId) {
-            setPrintQueue(printerId);
-        }
-    }, [printerId, setPrintQueue]);
+        setPrinters();
+    }, [setPrinters]);
+
+    useEffect(() => {
+        if (!printerDocId) return;
+        const found = printers.find((p: Printer) => p.id === printerDocId);
+        // const idForQueue = found?.printerId ?? printerDocId;
+        // setPrintQueue(idForQueue);
+    }, [printerDocId, printers, setPrintQueue]);
 
     const filteredQueue = statusFilter === 'ALL'
         ? printQueue
@@ -56,13 +65,17 @@ export default function ReceiptsPage() {
 
     const handleCreate = async () => {
         try {
-            await createPrintQueue({
-                printerId,
-                createdAt: new Date(),
-                status: formData.status,
-                lines: formData.lines,
-                printTime: formData.printTime,
-            });
+            const found = printers.find((p: Printer) => p.id === printerDocId);
+            // const effectivePrinterId = found?.printerId ?? printerDocId;
+            // const printerName = found?.label ?? "";
+            // await createPrintQueue({
+            //     printerId: effectivePrinterId,
+            //     printerName,
+            //     createdAt: new Date(),
+            //     status: formData.status,
+            //     lines: formData.lines,
+            //     printTime: formData.printTime,
+            // });
             setIsCreating(false);
             setFormData({
                 status: PrintQueueStatus.PENDING,
@@ -180,7 +193,7 @@ export default function ReceiptsPage() {
         <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
             <div className="mb-6 flex items-center gap-4">
                 <button
-                    onClick={() => router.push(`/printer/${printerId}`)}
+                    onClick={() => router.push(`/printer/${printerDocId}`)}
                     className="p-2 rounded-md transition-opacity hover:opacity-80"
                     style={{ backgroundColor: COFFEE_PALETTE.background }}
                 >
@@ -313,7 +326,7 @@ export default function ReceiptsPage() {
                                             color: COFFEE_PALETTE.textPrimary
                                         }}
                                     />
-                                    {formData.lines.length > 1 && (
+                                    {/* {formData.lines.length > 1 && (
                                         <button
                                             type="button"
                                             onClick={() => removeLine(index)}
@@ -322,7 +335,7 @@ export default function ReceiptsPage() {
                                         >
                                             <X className="w-4 h-4" />
                                         </button>
-                                    )}
+                                    )} */}
                                 </div>
                             ))}
                             <button

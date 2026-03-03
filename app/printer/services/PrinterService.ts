@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/app/utils/firebase.browser";
 import { Printer } from "../interface/Printer";
-import { DEFAULT_LINE_DECORATION_ID } from "@/app/constants/constant";
+import { DEFAULT_TEMPLATE_NAME } from "@/app/constants/constant";
 
 export const PrinterService = {
   subscribeToPrinters(
@@ -35,7 +35,6 @@ export const PrinterService = {
               const data = d.data();
               const createdAt = data.createdAt?.toDate?.() ?? new Date();
               return {
-                id: d.id,
                 ...data,
                 createdAt,
               };
@@ -68,38 +67,43 @@ export const PrinterService = {
 
   async addPrinter({
     printerId,
-    label,
     location,
   }: {
     printerId: string;
-    label: string;
     location: string;
   }): Promise<void> {
     try {
       const q = query(
         collection(db, "printer"),
-        where("printerId", "==", printerId.trim()),
+        where("id", "==", printerId.trim()),
       );
       const snapshot = await getDocs(q);
       if (!snapshot.empty) {
         throw new Error(`Printer "${printerId.trim()}" already exists`);
       }
-      const docRef = doc(collection(db, "printer"));
+      const newPrinter = {
+        id: printerId.trim().toUpperCase(),
+        location,
+        isOnline: false,
+        templateName: DEFAULT_TEMPLATE_NAME,
+        isVisible: true,
+        createdAt: serverTimestamp(),
+      }
+      
+      const docRef = doc(collection(db, "printer"), newPrinter.id);
       await setDoc(
         docRef,
         {
-          id: docRef.id,
-          printerId: printerId.trim(),
-          label,
-          location,
-          isOnline: false,
-          lineDecorationId: DEFAULT_LINE_DECORATION_ID,
-          isVisible: true,
-          createdAt: serverTimestamp(),
+          id: newPrinter.id,
+          location: newPrinter.location,
+          isOnline: newPrinter.isOnline,
+          templateName: newPrinter.templateName,
+          isVisible: newPrinter.isVisible,
+          createdAt: newPrinter.createdAt,
         },
         { merge: true },
       );
-      console.log("✅ Printer added:", printerId, label);
+      console.log("✅ Printer added:", newPrinter.id);
     } catch (error) {
       console.error("❌ Failed to add printer:", error);
       throw error;
@@ -110,12 +114,11 @@ export const PrinterService = {
     try {
       const printerRef = doc(db, "printer", printer.id);
       await updateDoc(printerRef, {
-        printerId: printer.printerId ?? "",
-        label: printer.label,
         location: printer.location,
         isOnline: printer.isOnline,
-        lineDecorationId: printer.lineDecorationId || "",
+        templateName: printer.templateName,
         isVisible: printer.isVisible ?? true,
+        createdAt: serverTimestamp(),
       });
       console.log("✅ Printer updated:", printer.id);
     } catch (error) {

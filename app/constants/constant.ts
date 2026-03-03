@@ -1,1 +1,1 @@
-export const DEFAULT_LINE_DECORATION_ID = "GjjDWnepOH8wlW02oHXD";
+export const DEFAULT_TEMPLATE_NAME = "DEFAULT";

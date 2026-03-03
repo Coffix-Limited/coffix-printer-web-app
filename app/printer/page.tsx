@@ -150,14 +150,14 @@ export default function PrinterPage() {
           </h3>
           <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
             {printers.length === 0
-              ? "Add printer documents in Firestore to see them here"
+              ? "Add printer documents in Setup page"
               : "Try switching to All or Visible only"}
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {filteredPrinters.map((printer: Printer) => {
-            const qrCode = `https://coffix.co.nz?printerId=${printer.id}&lineDecorationId=${printer.lineDecorationId}`;
+            const qrCode = `https://coffix.co.nz?printerId=${printer.id}&lineDecorationId=${printer.templateName}`;
             const isVisible = printer.isVisible ?? true;
             return (
               <div
@@ -174,17 +174,12 @@ export default function PrinterPage() {
                       <PrinterIcon className="w-6 h-6" style={{ color: COFFEE_PALETTE.primary }} />
                     </div>
                     <div>
-                      <h3 className="font-bold text-lg break-all" style={{ color: COFFEE_PALETTE.textPrimary }}>
-                        {printer.label}
-                      </h3>
                       <p className="text-sm font-mono break-all" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                        Printer ID: {printer.printerId || printer.id}
+                        Printer ID: {printer.id}
                       </p>
-                      {printer.printerId && (
-                        <p className="text-xs font-mono opacity-75 break-all" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                          Doc: {printer.id}
-                        </p>
-                      )}
+                      <p className="text-xs font-mono opacity-75 break-all" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                        Doc: {printer.id}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">

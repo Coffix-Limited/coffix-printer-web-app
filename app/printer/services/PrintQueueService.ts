@@ -24,7 +24,7 @@ export const PrintQueueService = {
       const collectionRef = query(
         collection(db, "printQueue"),
         where("printerId", "==", printerId),
-        orderBy("createdAt", "desc"),
+        orderBy("printTime", "desc"),
       );
       const unsubscribe = onSnapshot(
         collectionRef,
@@ -44,6 +44,7 @@ export const PrintQueueService = {
               return {
                 id: doc.id,
                 printerId: data.printerId,
+                printerName: data.printerName ?? undefined,
                 createdAt: data.createdAt?.toDate() || new Date(),
                 status: data.status || PrintQueueStatus.PENDING,
                 lines: data.lines || [],
@@ -79,10 +80,10 @@ export const PrintQueueService = {
   async createPrintQueue(printQueue: Omit<PrintQueue, "id">): Promise<string> {
     try {
       const docRef = doc(collection(db, "printQueue"));
-      const docId = docRef.id;
+      // const docId = docRef.id;
       await setDoc(docRef, {
-        id: docId,
         printerId: printQueue.printerId,
+        ...(printQueue.printerName != null && { printerName: printQueue.printerName }),
         createdAt: Timestamp.fromDate(printQueue.createdAt),
         status: printQueue.status,
         lines: printQueue.lines,
@@ -101,6 +102,7 @@ export const PrintQueueService = {
       const printQueueRef = doc(db, "printQueue", printQueue.id);
       await updateDoc(printQueueRef, {
         printerId: printQueue.printerId,
+        ...(printQueue.printerName != null && { printerName: printQueue.printerName }),
         createdAt: Timestamp.fromDate(printQueue.createdAt),
         status: printQueue.status,
         lines: printQueue.lines,

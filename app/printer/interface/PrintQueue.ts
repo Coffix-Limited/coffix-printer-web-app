@@ -9,6 +9,8 @@ export enum PrintQueueStatus {
 export interface PrintQueue {
   id: string;
   printerId: string;
+  /** Optional for backward compatibility with existing docs */
+  printerName?: string;
   createdAt: Date;
   status: PrintQueueStatus;
   lines: string[];
