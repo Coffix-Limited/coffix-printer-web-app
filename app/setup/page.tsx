@@ -54,31 +54,31 @@ export default function SetupPage() {
   return (
     <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>Printer Setup</h2>
-        <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
+        <h2 className="text-2xl font-bold mb-2" style={{ color: COFFEE_PALETTE.cardBg }}>Printer Setup</h2>
+        <p className="text-sm opacity-80" style={{ color: COFFEE_PALETTE.cardBg }}>
           Register new printers and generate QR codes • {printers.length} printer{printers.length !== 1 ? 's' : ''} registered
         </p>
       </div>
 
       {saveMessage && (
         <div className="mb-6 p-4 rounded-lg border" style={{
-          backgroundColor: saveMessage.includes('✅') ? '#E8F5E9' : '#FFEBEE',
-          borderColor: saveMessage.includes('✅') ? COFFEE_PALETTE.success : COFFEE_PALETTE.error
+          backgroundColor: COFFEE_PALETTE.cardBg,
+          borderColor: COFFEE_PALETTE.primary
         }}>
-          <p className="text-sm font-medium">{saveMessage}</p>
+          <p className="text-sm font-medium" style={{ color: saveMessage.includes('✅') ? COFFEE_PALETTE.primary : COFFEE_PALETTE.background }}>{saveMessage}</p>
         </div>
       )}
 
       <div className="max-w-2xl mx-auto">
-        <div className="p-6 rounded-lg shadow-sm border" style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
+        <div className="p-6 rounded-lg shadow-sm border" style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.background }}>
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: COFFEE_PALETTE.background }}>
             <Printer size={20} />
             Printer Information
           </h3>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
+              <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.background }}>
                 Printer ID *
               </label>
               <input
@@ -88,14 +88,15 @@ export default function SetupPage() {
                 placeholder="e.g. VOS, AUK, TUR"
                 className="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2"
                 style={{
-                  borderColor: COFFEE_PALETTE.border,
-                  color: COFFEE_PALETTE.textPrimary
+                  borderColor: COFFEE_PALETTE.background,
+                  color: COFFEE_PALETTE.background,
+                  backgroundColor: COFFEE_PALETTE.cardBg
                 }}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
+              <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.background }}>
                 Location *
               </label>
               <input
@@ -105,8 +106,9 @@ export default function SetupPage() {
                 placeholder="e.g., Auckland City"
                 className="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2"
                 style={{
-                  borderColor: COFFEE_PALETTE.border,
-                  color: COFFEE_PALETTE.textPrimary
+                  borderColor: COFFEE_PALETTE.background,
+                  color: COFFEE_PALETTE.background,
+                  backgroundColor: COFFEE_PALETTE.cardBg
                 }}
               />
             </div>
@@ -114,8 +116,8 @@ export default function SetupPage() {
             <button
               onClick={handleSave}
               disabled={saving || !printerId?.trim() || !location?.trim()}
-              className="w-full py-3 rounded-md font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              style={{ backgroundColor: COFFEE_PALETTE.success }}
+              className="w-full py-3 rounded-md font-medium transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              style={{ backgroundColor: COFFEE_PALETTE.primary, color: COFFEE_PALETTE.cardBg }}
             >
               {saving ? (
                 <>
@@ -133,12 +135,12 @@ export default function SetupPage() {
         </div>
       </div>
 
-      <div className="mt-6 p-4 rounded-lg border" style={{ backgroundColor: COFFEE_PALETTE.warningBg, borderColor: COFFEE_PALETTE.warning }}>
+      <div className="mt-6 p-4 rounded-lg border" style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.primary }}>
         <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: COFFEE_PALETTE.warning }} />
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: COFFEE_PALETTE.primary }} />
           <div>
-            <h4 className="font-semibold text-sm mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>Setup Instructions</h4>
-            <ol className="text-sm space-y-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
+            <h4 className="font-semibold text-sm mb-1" style={{ color: COFFEE_PALETTE.background }}>Setup Instructions</h4>
+            <ol className="text-sm space-y-1 opacity-80" style={{ color: COFFEE_PALETTE.background }}>
               <li>1. Enter Printer ID (e.g. VOS, AUK, TUR) — </li>
               <li>2. Set location name</li>
               <li>3. Click &ldquo;Save Printer&rdquo; to register</li>

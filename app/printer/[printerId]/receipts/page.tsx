@@ -176,18 +176,8 @@ export default function ReceiptsPage() {
     };
 
     const getStatusColor = (status: PrintQueueStatus) => {
-        switch (status) {
-            case PrintQueueStatus.COMPLETED:
-                return COFFEE_PALETTE.success;
-            case PrintQueueStatus.ERROR:
-                return COFFEE_PALETTE.error;
-            case PrintQueueStatus.PROCESSING:
-                return COFFEE_PALETTE.warning;
-            case PrintQueueStatus.SCHEDULED:
-                return COFFEE_PALETTE.primary;
-            default:
-                return COFFEE_PALETTE.textSecondary;
-        }
+        void status;
+        return COFFEE_PALETTE.primary;
     };
 
     return (
@@ -196,15 +186,15 @@ export default function ReceiptsPage() {
                 <button
                     onClick={() => router.push(`/printer/${printerId}`)}
                     className="p-2 rounded-md transition-opacity hover:opacity-80"
-                    style={{ backgroundColor: COFFEE_PALETTE.background }}
+                    style={{ backgroundColor: COFFEE_PALETTE.cardBg }}
                 >
                     <ArrowLeft className="w-5 h-5" style={{ color: COFFEE_PALETTE.primary }} />
                 </button>
                 <div className="flex-1">
-                    <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                    <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: COFFEE_PALETTE.cardBg }}>
                         Print Queue Receipts
                     </h2>
-                    <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                    <p className="text-sm opacity-80" style={{ color: COFFEE_PALETTE.cardBg }}>
                         Manage print queue items • Showing {displayQueue.length} of {filteredQueue.length}
                     </p>
                 </div>
@@ -215,8 +205,8 @@ export default function ReceiptsPage() {
                         className="px-3 py-2 rounded-md border text-sm"
                         style={{
                             backgroundColor: COFFEE_PALETTE.cardBg,
-                            borderColor: COFFEE_PALETTE.border,
-                            color: COFFEE_PALETTE.textPrimary
+                            borderColor: COFFEE_PALETTE.background,
+                            color: COFFEE_PALETTE.background
                         }}
                     >
                         <option value="ALL">All Statuses</option>
@@ -249,21 +239,21 @@ export default function ReceiptsPage() {
 
             {loading && (
                 <div className="text-center py-12">
-                    <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>Loading print queue...</p>
+                    <p className="text-sm opacity-80" style={{ color: COFFEE_PALETTE.cardBg }}>Loading print queue...</p>
                 </div>
             )}
 
             {isCreating && (
                 <div className="mb-6 rounded-lg border shadow-sm p-6" style={{
                     backgroundColor: COFFEE_PALETTE.cardBg,
-                    borderColor: COFFEE_PALETTE.border
+                    borderColor: COFFEE_PALETTE.primary
                 }}>
-                    <h3 className="font-bold text-lg mb-4" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                    <h3 className="font-bold text-lg mb-4" style={{ color: COFFEE_PALETTE.background }}>
                         Create New Receipt
                     </h3>
                     <div className="space-y-4">
                         <div>
-                            <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                            <label className="text-xs font-semibold uppercase mb-1 block opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                                 Label
                             </label>
                             <input
@@ -274,13 +264,13 @@ export default function ReceiptsPage() {
                                 className="w-full px-3 py-2 rounded-md border text-sm"
                                 style={{
                                     backgroundColor: COFFEE_PALETTE.cardBg,
-                                    borderColor: COFFEE_PALETTE.border,
-                                    color: COFFEE_PALETTE.textPrimary
+                                    borderColor: COFFEE_PALETTE.background,
+                                    color: COFFEE_PALETTE.background
                                 }}
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                            <label className="text-xs font-semibold uppercase mb-1 block opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                                 Status
                             </label>
                             <select
@@ -289,15 +279,15 @@ export default function ReceiptsPage() {
                                 className="w-full px-3 py-2 rounded-md border text-sm"
                                 style={{
                                     backgroundColor: COFFEE_PALETTE.cardBg,
-                                    borderColor: COFFEE_PALETTE.border,
-                                    color: COFFEE_PALETTE.textPrimary
+                                    borderColor: COFFEE_PALETTE.background,
+                                    color: COFFEE_PALETTE.background
                                 }}
                             >
                                 {Object.values(PrintQueueStatus).map(status => (
                                     <option key={status} value={status}>{status}</option>
                                 ))}
                             </select>
-                            <label className="text-xs font-semibold uppercase mb-1 mt-4 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                            <label className="text-xs font-semibold uppercase mb-1 mt-4 block opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                                 Template Name
                             </label>
                             <select
@@ -306,8 +296,8 @@ export default function ReceiptsPage() {
                                 className="px-3 py-2 rounded-md border text-sm"
                                 style={{
                                     backgroundColor: COFFEE_PALETTE.cardBg,
-                                    borderColor: COFFEE_PALETTE.border,
-                                    color: COFFEE_PALETTE.textPrimary
+                                    borderColor: COFFEE_PALETTE.background,
+                                    color: COFFEE_PALETTE.background
                                 }}
                             >
                                 {lineDecorations.map(template => (
@@ -316,7 +306,7 @@ export default function ReceiptsPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                            <label className="text-xs font-semibold uppercase mb-1 block opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                                 Print time
                             </label>
                             <div className="flex flex-wrap gap-2">
@@ -330,9 +320,9 @@ export default function ReceiptsPage() {
                                             className="px-3 py-1.5 rounded-full text-sm font-medium transition-all"
                                             style={{
                                                 backgroundColor: isSelected ? COFFEE_PALETTE.primary : COFFEE_PALETTE.background,
-                                                color: isSelected ? '#FFFFFF' : COFFEE_PALETTE.textPrimary,
+                                                color: COFFEE_PALETTE.cardBg,
                                                 borderWidth: 1,
-                                                borderColor: isSelected ? COFFEE_PALETTE.primary : COFFEE_PALETTE.border
+                                                borderColor: isSelected ? COFFEE_PALETTE.primary : COFFEE_PALETTE.background
                                             }}
                                         >
                                             {label}
@@ -340,12 +330,12 @@ export default function ReceiptsPage() {
                                     );
                                 })}
                             </div>
-                            <p className="text-xs mt-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                            <p className="text-xs mt-1 opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                                 Print at: {formData.printTime.toLocaleString()}
                             </p>
                         </div>
                         <div>
-                            <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                            <label className="text-xs font-semibold uppercase mb-1 block opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                                 Lines
                             </label>
                             {formData.lines.map((line, index) => (
@@ -358,8 +348,8 @@ export default function ReceiptsPage() {
                                         className="flex-1 px-3 py-2 rounded-md border text-sm resize-y min-h-16"
                                         style={{
                                             backgroundColor: COFFEE_PALETTE.cardBg,
-                                            borderColor: COFFEE_PALETTE.border,
-                                            color: COFFEE_PALETTE.textPrimary
+                                            borderColor: COFFEE_PALETTE.background,
+                                            color: COFFEE_PALETTE.background
                                         }}
                                     />
                                     {formData.lines.length > 1 && (
@@ -367,7 +357,10 @@ export default function ReceiptsPage() {
                                             type="button"
                                             onClick={() => removeLine(index)}
                                             className="px-2 py-2 rounded-md transition-opacity hover:opacity-80 shrink-0"
-                                            style={{ backgroundColor: COFFEE_PALETTE.error, color: '#FFFFFF' }}
+                                            style={{
+                                                backgroundColor: COFFEE_PALETTE.primary,
+                                                color: COFFEE_PALETTE.cardBg
+                                            }}
                                         >
                                             <X className="w-4 h-4" />
                                         </button>
@@ -381,7 +374,7 @@ export default function ReceiptsPage() {
                                     className="mt-2 px-3 py-1.5 rounded-md text-sm font-medium transition-opacity hover:opacity-90"
                                     style={{
                                         backgroundColor: COFFEE_PALETTE.background,
-                                        color: COFFEE_PALETTE.primary
+                                        color: COFFEE_PALETTE.cardBg
                                     }}
                                 >
                                     + Add line
@@ -392,8 +385,8 @@ export default function ReceiptsPage() {
                                 onClick={handleCreate}
                                 className="px-4 py-2 rounded-md text-sm font-medium transition-opacity hover:opacity-90 flex items-center gap-2"
                                 style={{
-                                    backgroundColor: COFFEE_PALETTE.success,
-                                    color: '#FFFFFF'
+                                    backgroundColor: COFFEE_PALETTE.primary,
+                                    color: COFFEE_PALETTE.cardBg
                                 }}
                             >
                                 <Save className="w-4 h-4" />
@@ -404,7 +397,7 @@ export default function ReceiptsPage() {
                                 className="px-4 py-2 rounded-md text-sm font-medium transition-opacity hover:opacity-90 flex items-center gap-2"
                                 style={{
                                     backgroundColor: COFFEE_PALETTE.background,
-                                    color: COFFEE_PALETTE.textPrimary
+                                    color: COFFEE_PALETTE.cardBg
                                 }}
                             >
                                 <X className="w-4 h-4" />
@@ -419,9 +412,9 @@ export default function ReceiptsPage() {
                 {displayQueue.length === 0 && !loading && (
                     <div className="text-center py-12 rounded-lg border" style={{
                         backgroundColor: COFFEE_PALETTE.cardBg,
-                        borderColor: COFFEE_PALETTE.border
+                        borderColor: COFFEE_PALETTE.primary
                     }}>
-                        <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                        <p className="text-sm" style={{ color: COFFEE_PALETTE.background }}>
                             {statusFilter === 'ALL'
                                 ? 'No print queue items found. Create one to get started.'
                                 : `No ${statusFilter} items found.`

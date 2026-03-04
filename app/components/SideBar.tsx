@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { COFFEE_PALETTE } from "../constants/theme";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, Menu, X } from "lucide-react";
 import { signOut } from "firebase/auth";
@@ -20,15 +20,21 @@ const NAV_ITEMS: NavItem[] = [
   { name: "Printers", href: "/printer" },
   { name: "Logs", href: "/logs" },
   { name: "Templates", href: "/templates" },
-  { name: "Setup", href: "/setup" },
+  // { name: "Setup", href: "/setup" },
   { name: "Users", href: "/users" },
 ];
 
 export default function SideBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const pathname = usePathname();
   const router = useRouter();
+
+  useEffect(() => {
+    const unsub = auth.onAuthStateChanged((user) => setUserEmail(user?.email ?? null));
+    return () => unsub();
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -70,7 +76,7 @@ export default function SideBar() {
             <span className="text-white text-xl font-bold">☕</span>
           </div>
           <h1 className="text-lg font-bold leading-tight" style={{ color: COFFEE_PALETTE.primary }}>
-            Coffix Printer Dashboard
+            Print Servers Admin
           </h1>
         </div>
 
@@ -118,10 +124,11 @@ export default function SideBar() {
           </button>
         </div>
 
-        <footer className="p-4 border-t text-xs text-center">
-          <div className="" style={{ borderColor: COFFEE_PALETTE.border, color: COFFEE_PALETTE.textSecondary }}>
-            © 2026 Coffee System v1.0
+        <footer className="p-4 border-t text-xs text-center" style={{ borderColor: COFFEE_PALETTE.border }}>
+          <div className="truncate mb-1" style={{ color: COFFEE_PALETTE.textSecondary }} title={userEmail ?? undefined}>
+            {userEmail ?? "—"}
           </div>
+          <div style={{ color: COFFEE_PALETTE.textSecondary }}>v1.0</div>
         </footer>
       </nav>
     </>

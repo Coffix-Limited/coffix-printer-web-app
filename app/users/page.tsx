@@ -131,18 +131,18 @@ export default function UsersPage() {
         <main className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <div>
-                    <h2 className="text-xl md:text-2xl font-bold" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                    <h2 className="text-xl md:text-2xl font-bold" style={{ color: COFFEE_PALETTE.cardBg }}>
                         Users
                     </h2>
-                    <p className="text-sm mt-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                    <p className="text-sm mt-1 opacity-80" style={{ color: COFFEE_PALETTE.cardBg }}>
                         Manage dashboard users • {users.length} total
                     </p>
                 </div>
                 {isSuperAdmin && (
                 <button
                     onClick={openCreate}
-                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-medium text-white shrink-0"
-                    style={{ backgroundColor: COFFEE_PALETTE.primary }}
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-medium shrink-0"
+                    style={{ backgroundColor: COFFEE_PALETTE.primary, color: COFFEE_PALETTE.cardBg }}
                 >
                     <Plus size={18} />
                     Add User
@@ -153,46 +153,46 @@ export default function UsersPage() {
             {error && (
                 <div
                     className="mb-6 p-4 rounded-lg border"
-                    style={{ backgroundColor: "#FFEBEE", borderColor: COFFEE_PALETTE.error }}
+                    style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.primary }}
                 >
-                    <p className="text-sm font-medium" style={{ color: COFFEE_PALETTE.error }}>{error}</p>
+                    <p className="text-sm font-medium" style={{ color: COFFEE_PALETTE.background }}>{error}</p>
                 </div>
             )}
 
             <div
                 className="rounded-lg border overflow-hidden"
-                style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}
+                style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.background }}
             >
                 {loading ? (
-                    <div className="p-12 text-center" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                    <div className="p-12 text-center opacity-80" style={{ color: COFFEE_PALETTE.background }}>
                         Loading...
                     </div>
                 ) : users.length === 0 ? (
-                    <div className="p-12 text-center" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                    <div className="p-12 text-center opacity-80" style={{ color: COFFEE_PALETTE.background }}>
                         No users yet. Click &quot;Add User&quot; to create one.
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr style={{ backgroundColor: "#F5F5F4", borderBottom: `1px solid ${COFFEE_PALETTE.border}` }}>
-                                    <th className="text-left px-4 py-3 text-sm font-semibold" style={{ color: COFFEE_PALETTE.textPrimary }}>Email</th>
-                                    <th className="text-left px-4 py-3 text-sm font-semibold" style={{ color: COFFEE_PALETTE.textPrimary }}>Name</th>
-                                    <th className="text-left px-4 py-3 text-sm font-semibold" style={{ color: COFFEE_PALETTE.textPrimary }}>Role</th>
-                                    {isSuperAdmin && <th className="text-right px-4 py-3 text-sm font-semibold" style={{ color: COFFEE_PALETTE.textPrimary }}>Actions</th>}
+                                <tr style={{ backgroundColor: COFFEE_PALETTE.background, borderBottom: `1px solid ${COFFEE_PALETTE.background}` }}>
+                                    <th className="text-left px-4 py-3 text-sm font-semibold" style={{ color: COFFEE_PALETTE.cardBg }}>Email</th>
+                                    <th className="text-left px-4 py-3 text-sm font-semibold" style={{ color: COFFEE_PALETTE.cardBg }}>Name</th>
+                                    <th className="text-left px-4 py-3 text-sm font-semibold" style={{ color: COFFEE_PALETTE.cardBg }}>Role</th>
+                                    {isSuperAdmin && <th className="text-right px-4 py-3 text-sm font-semibold" style={{ color: COFFEE_PALETTE.cardBg }}>Actions</th>}
                                 </tr>
                             </thead>
                             <tbody>
                                 {users.map((u) => (
-                                    <tr key={u.id} style={{ borderBottom: `1px solid ${COFFEE_PALETTE.border}` }}>
-                                        <td className="px-4 py-3 text-sm" style={{ color: COFFEE_PALETTE.textPrimary }}>{u.email}</td>
-                                        <td className="px-4 py-3 text-sm" style={{ color: COFFEE_PALETTE.textPrimary }}>{u.displayName || "—"}</td>
+                                    <tr key={u.id} style={{ borderBottom: `1px solid ${COFFEE_PALETTE.background}` }}>
+                                        <td className="px-4 py-3 text-sm" style={{ color: COFFEE_PALETTE.background }}>{u.email}</td>
+                                        <td className="px-4 py-3 text-sm" style={{ color: COFFEE_PALETTE.background }}>{u.displayName || "—"}</td>
                                         <td className="px-4 py-3">
                                             <span
                                                 className="px-2 py-0.5 rounded text-xs font-medium"
                                                 style={{
-                                                    backgroundColor: u.role === "superadmin" ? "#E3F2FD" : u.role === "admin" ? "#E8F5E9" : "#F5F5F4",
-                                                    color: u.role === "superadmin" ? "#1976D2" : u.role === "admin" ? COFFEE_PALETTE.success : COFFEE_PALETTE.textSecondary,
+                                                    backgroundColor: COFFEE_PALETTE.primary + "20",
+                                                    color: COFFEE_PALETTE.primary,
                                                 }}
                                             >
                                                 {u.role}
@@ -203,7 +203,7 @@ export default function UsersPage() {
                                                 <>
                                                     <button
                                                         onClick={() => openEdit(u)}
-                                                        className="p-2 rounded hover:bg-stone-100 mr-1"
+                                                        className="p-2 rounded hover:opacity-80 mr-1"
                                                         style={{ color: COFFEE_PALETTE.primary }}
                                                         aria-label="Edit"
                                                     >
@@ -212,8 +212,8 @@ export default function UsersPage() {
                                                     <button
                                                         onClick={() => handleDelete(u.id)}
                                                         disabled={deleting === u.id}
-                                                        className="p-2 rounded hover:bg-red-50 disabled:opacity-50"
-                                                        style={{ color: COFFEE_PALETTE.error }}
+                                                        className="p-2 rounded hover:opacity-80 disabled:opacity-50"
+                                                        style={{ color: COFFEE_PALETTE.primary }}
                                                         aria-label="Delete"
                                                     >
                                                         <Trash2 size={16} />
@@ -241,16 +241,16 @@ export default function UsersPage() {
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-bold" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                            <h3 className="text-lg font-bold" style={{ color: COFFEE_PALETTE.background }}>
                                 {editing ? "Edit User" : "Add User"}
                             </h3>
-                            <button onClick={closeModal} className="p-1 rounded hover:bg-stone-100">
+                            <button onClick={closeModal} className="p-1 rounded hover:opacity-80" style={{ color: COFFEE_PALETTE.primary }}>
                                 <X size={20} />
                             </button>
                         </div>
                         <form onSubmit={handleSave} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>Email</label>
+                                <label className="block text-sm font-medium mb-1" style={{ color: COFFEE_PALETTE.background }}>Email</label>
                                 <input
                                     type="email"
                                     value={form.email}
@@ -258,12 +258,12 @@ export default function UsersPage() {
                                     required
                                     disabled={!!editing}
                                     className="w-full px-3 py-2 rounded border text-sm"
-                                    style={{ borderColor: COFFEE_PALETTE.border }}
+                                    style={{ borderColor: COFFEE_PALETTE.background, color: COFFEE_PALETTE.background, backgroundColor: COFFEE_PALETTE.cardBg }}
                                 />
                             </div>
                             {!editing && (
                                 <div>
-                                    <label className="block text-sm font-medium mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>Password</label>
+                                    <label className="block text-sm font-medium mb-1" style={{ color: COFFEE_PALETTE.background }}>Password</label>
                                     <input
                                         type="password"
                                         value={form.password}
@@ -272,27 +272,27 @@ export default function UsersPage() {
                                         minLength={6}
                                         placeholder="Min 6 characters"
                                         className="w-full px-3 py-2 rounded border text-sm"
-                                        style={{ borderColor: COFFEE_PALETTE.border }}
+                                        style={{ borderColor: COFFEE_PALETTE.background, color: COFFEE_PALETTE.background, backgroundColor: COFFEE_PALETTE.cardBg }}
                                     />
                                 </div>
                             )}
                             <div>
-                                <label className="block text-sm font-medium mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>Display Name</label>
+                                <label className="block text-sm font-medium mb-1" style={{ color: COFFEE_PALETTE.background }}>Display Name</label>
                                 <input
                                     type="text"
                                     value={form.displayName}
                                     onChange={(e) => setForm((f) => ({ ...f, displayName: e.target.value }))}
                                     className="w-full px-3 py-2 rounded border text-sm"
-                                    style={{ borderColor: COFFEE_PALETTE.border }}
+                                    style={{ borderColor: COFFEE_PALETTE.background, color: COFFEE_PALETTE.background, backgroundColor: COFFEE_PALETTE.cardBg }}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>Role</label>
+                                <label className="block text-sm font-medium mb-1" style={{ color: COFFEE_PALETTE.background }}>Role</label>
                                 <select
                                     value={form.role}
                                     onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
                                     className="w-full px-3 py-2 rounded border text-sm"
-                                    style={{ borderColor: COFFEE_PALETTE.border }}
+                                    style={{ borderColor: COFFEE_PALETTE.background, color: COFFEE_PALETTE.background, backgroundColor: COFFEE_PALETTE.cardBg }}
                                 >
                                     {ROLES.map((r) => (
                                         <option key={r} value={r}>{r}</option>
@@ -303,8 +303,8 @@ export default function UsersPage() {
                                 <button
                                     type="submit"
                                     disabled={saving}
-                                    className="flex-1 py-2 rounded font-medium text-white disabled:opacity-50"
-                                    style={{ backgroundColor: COFFEE_PALETTE.primary }}
+                                    className="flex-1 py-2 rounded font-medium disabled:opacity-50"
+                                    style={{ backgroundColor: COFFEE_PALETTE.primary, color: COFFEE_PALETTE.cardBg }}
                                 >
                                     {saving ? "Saving..." : editing ? "Update" : "Create"}
                                 </button>

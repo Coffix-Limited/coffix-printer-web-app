@@ -44,28 +44,14 @@ export default function LogsPage() {
     const getLogIcon = (level: string) => {
         switch (level.toLowerCase()) {
             case 'error':
-                return <AlertCircle className="w-4 h-4" style={{ color: COFFEE_PALETTE.error }} />;
+                return <AlertCircle className="w-4 h-4" style={{ color: COFFEE_PALETTE.primary }} />;
             case 'warning':
-                return <AlertTriangle className="w-4 h-4" style={{ color: COFFEE_PALETTE.warning }} />;
+                return <AlertTriangle className="w-4 h-4" style={{ color: COFFEE_PALETTE.primary }} />;
             case 'success':
-                return <CheckCircle className="w-4 h-4" style={{ color: COFFEE_PALETTE.success }} />;
+                return <CheckCircle className="w-4 h-4" style={{ color: COFFEE_PALETTE.primary }} />;
             case 'info':
             default:
                 return <Info className="w-4 h-4" style={{ color: COFFEE_PALETTE.primary }} />;
-        }
-    };
-
-    const getLogColor = (level: string) => {
-        switch (level.toLowerCase()) {
-            case 'error':
-                return COFFEE_PALETTE.error;
-            case 'warning':
-                return COFFEE_PALETTE.warning;
-            case 'success':
-                return COFFEE_PALETTE.success;
-            case 'info':
-            default:
-                return COFFEE_PALETTE.primary;
         }
     };
 
@@ -98,32 +84,32 @@ export default function LogsPage() {
         <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
             {error && (
                 <div className="mb-6 p-4 rounded-lg border flex items-start gap-3"
-                    style={{ backgroundColor: '#FFEBEE', borderColor: COFFEE_PALETTE.error }}>
+                    style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.primary }}>
                     <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
-                        style={{ backgroundColor: COFFEE_PALETTE.error }}>
-                        <span className="text-white text-xs">!</span>
+                        style={{ backgroundColor: COFFEE_PALETTE.primary }}>
+                        <span className="text-xs" style={{ color: COFFEE_PALETTE.cardBg }}>!</span>
                     </div>
                     <div className="flex-1">
-                        <h4 className="font-semibold text-sm mb-1" style={{ color: COFFEE_PALETTE.error }}>
+                        <h4 className="font-semibold text-sm mb-1" style={{ color: COFFEE_PALETTE.primary }}>
                             Firebase Connection Error
                         </h4>
-                        <p className="text-sm mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>{error}</p>
-                        <p className="text-xs opacity-80" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                            Check browser console or <code className="bg-white/50 px-1 py-0.5 rounded">FIREBASE_SETUP.md</code>
+                        <p className="text-sm mb-2" style={{ color: COFFEE_PALETTE.background }}>{error}</p>
+                        <p className="text-xs opacity-80" style={{ color: COFFEE_PALETTE.background }}>
+                            Check browser console or <code className="px-1 py-0.5 rounded" style={{ backgroundColor: COFFEE_PALETTE.background + '20' }}>FIREBASE_SETUP.md</code>
                         </p>
                     </div>
                 </div>
             )}
 
             <div className="mb-6 md:mb-8">
-                <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: COFFEE_PALETTE.cardBg }}>
                     System Logs
                 </h2>
-                <div className="flex flex-wrap items-center gap-2 text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                <div className="flex flex-wrap items-center gap-2 text-sm opacity-80" style={{ color: COFFEE_PALETTE.cardBg }}>
                     <span>View all system logs and activity</span>
                     {loading && <span className="animate-pulse text-xs italic">Loading...</span>}
                     {!loading && logs.length > 0 && (
-                        <span className="bg-stone-100 px-2 py-0.5 rounded-full text-xs">
+                        <span className="px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: 'rgba(255,255,255,0.12)', color: COFFEE_PALETTE.cardBg }}>
                             {filteredLogs.length} of {logs.length} logs
                         </span>
                     )}
@@ -131,11 +117,11 @@ export default function LogsPage() {
             </div>
 
             <div className="mb-6 p-4 md:p-6 rounded-lg border"
-                style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
+                style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.background }}>
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1 relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
-                            style={{ color: COFFEE_PALETTE.textSecondary }} />
+                            style={{ color: COFFEE_PALETTE.background }} />
                         <input
                             type="text"
                             placeholder="Search logs..."
@@ -143,8 +129,8 @@ export default function LogsPage() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-10 py-2 rounded-md border focus:outline-none focus:ring-2"
                             style={{
-                                borderColor: COFFEE_PALETTE.border,
-                                color: COFFEE_PALETTE.textPrimary
+                                borderColor: COFFEE_PALETTE.background,
+                                color: COFFEE_PALETTE.background
                             }}
                         />
                         {searchQuery && (
@@ -152,7 +138,7 @@ export default function LogsPage() {
                                 onClick={() => setSearchQuery('')}
                                 className="absolute right-3 top-1/2 -translate-y-1/2"
                             >
-                                <X className="w-4 h-4" style={{ color: COFFEE_PALETTE.textSecondary }} />
+                                <X className="w-4 h-4" style={{ color: COFFEE_PALETTE.primary }} />
                             </button>
                         )}
                     </div>
@@ -163,9 +149,9 @@ export default function LogsPage() {
                             className="px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2"
                             style={{
                                 backgroundColor: !filterLevel ? COFFEE_PALETTE.primary : 'transparent',
-                                color: !filterLevel ? '#FFFFFF' : COFFEE_PALETTE.textSecondary,
-                                borderWidth: !filterLevel ? '0' : '1px',
-                                borderColor: COFFEE_PALETTE.border
+                                color: !filterLevel ? COFFEE_PALETTE.cardBg : COFFEE_PALETTE.background,
+                                borderWidth: !filterLevel ? 0 : 1,
+                                borderColor: COFFEE_PALETTE.background
                             }}
                         >
                             <Filter className="w-4 h-4" />
@@ -178,9 +164,9 @@ export default function LogsPage() {
                                 className="px-4 py-2 rounded-md text-sm font-medium transition-all capitalize"
                                 style={{
                                     backgroundColor: filterLevel === level ? COFFEE_PALETTE.background : 'transparent',
-                                    color: filterLevel === level ? getLogColor(level) : COFFEE_PALETTE.textSecondary,
-                                    borderWidth: '1px',
-                                    borderColor: filterLevel === level ? getLogColor(level) : COFFEE_PALETTE.border
+                                    color: filterLevel === level ? COFFEE_PALETTE.primary : COFFEE_PALETTE.background,
+                                    borderWidth: 1,
+                                    borderColor: filterLevel === level ? COFFEE_PALETTE.primary : COFFEE_PALETTE.background
                                 }}
                             >
                                 {level} ({logCounts[level as keyof typeof logCounts]})
@@ -194,17 +180,17 @@ export default function LogsPage() {
                 <div className="flex items-center justify-center py-20">
                     <div className="text-center">
                         <Activity className="w-8 h-8 mx-auto mb-2 animate-spin" style={{ color: COFFEE_PALETTE.primary }} />
-                        <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>Loading logs...</p>
+                        <p className="text-sm opacity-80" style={{ color: COFFEE_PALETTE.cardBg }}>Loading logs...</p>
                     </div>
                 </div>
             ) : filteredLogs.length === 0 ? (
                 <div className="p-12 rounded-lg border-2 border-dashed text-center"
-                    style={{ borderColor: COFFEE_PALETTE.border }}>
-                    <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" style={{ color: COFFEE_PALETTE.textSecondary }} />
-                    <h3 className="text-lg font-semibold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                    style={{ borderColor: 'rgba(255,255,255,0.2)' }}>
+                    <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" style={{ color: COFFEE_PALETTE.cardBg }} />
+                    <h3 className="text-lg font-semibold mb-1" style={{ color: COFFEE_PALETTE.cardBg }}>
                         {logs.length === 0 ? 'No Logs Found' : 'No Matching Logs'}
                     </h3>
-                    <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                    <p className="text-sm opacity-80" style={{ color: COFFEE_PALETTE.cardBg }}>
                         {logs.length === 0
                             ? 'Add log documents in Firestore to see them here'
                             : 'Try adjusting your filters or search query'}
@@ -216,7 +202,7 @@ export default function LogsPage() {
                         <div
                             key={log.id}
                             className="p-4 md:p-5 rounded-lg border hover:shadow-sm transition-shadow"
-                            style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}
+                            style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.background }}
                         >
                             <div className="flex items-start gap-3">
                                 <div className="shrink-0 mt-0.5">
@@ -227,22 +213,22 @@ export default function LogsPage() {
                                     <div className="flex items-start justify-between gap-2 mb-1">
                                         <div className="flex-1">
                                             <p className="text-sm md:text-base font-medium wrap-break-word"
-                                                style={{ color: COFFEE_PALETTE.textPrimary }}>
+                                                style={{ color: COFFEE_PALETTE.background }}>
                                                 {log.message}
                                             </p>
                                         </div>
                                         <span
                                             className="shrink-0 px-2 py-0.5 rounded-full text-xs font-medium capitalize"
                                             style={{
-                                                backgroundColor: `${getLogColor(log.level)}15`,
-                                                color: getLogColor(log.level)
+                                                backgroundColor: COFFEE_PALETTE.primary + '20',
+                                                color: COFFEE_PALETTE.primary
                                             }}
                                         >
                                             {log.level}
                                         </span>
                                     </div>
 
-                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs opacity-80" style={{ color: COFFEE_PALETTE.background }}>
                                         {log.id != null && log.id !== "" && (
                                             <>
                                                 <span className="font-mono">{log.id.substring(0, 8)}</span>

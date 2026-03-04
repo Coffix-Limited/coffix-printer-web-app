@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { useAuthStore } from "../store/useAuthStore"
+import { COFFEE_PALETTE } from "../constants/theme"
 import SideBar from "./SideBar"
 
 type Props = {
@@ -10,7 +11,7 @@ type Props = {
 }
 
 const ClientWrapper: React.FC<Props> = ({ children }) => {
-    const {user, subscribe} = useAuthStore((s) => s)
+    const { user, subscribe } = useAuthStore((s) => s)
     const router = useRouter()
     const pathname = usePathname()
     const isLoginPage = pathname === "/login"
@@ -38,7 +39,7 @@ const ClientWrapper: React.FC<Props> = ({ children }) => {
     if (isLoginPage) return <>{children}</>
 
     return (
-        <div className="min-h-screen flex flex-col md:flex-row">
+        <div className="min-h-screen flex flex-col md:flex-row" style={{ backgroundColor: COFFEE_PALETTE.background }}>
             <SideBar />
             <main className="flex-1 w-full md:ml-64 transition-all duration-300">
                 {children}

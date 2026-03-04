@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { COFFEE_PALETTE } from "../constants/theme";
 import { usePrinterStore } from "./store/usePrinterStore";
-import { Printer as PrinterIcon, MapPin, Activity, Copy, Download, QrCode, Eye, EyeOff, Trash2 } from "lucide-react";
+import { Printer as PrinterIcon, MapPin, Activity, Copy, Download, QrCode, Eye, EyeOff, Trash2, Plus } from "lucide-react";
 import { Printer } from "./interface/Printer";
 import QRCodeReact from "react-qr-code";
 
@@ -75,16 +75,16 @@ export default function PrinterPage() {
     <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
       {copyMessage && (
         <div className="mb-6 p-4 rounded-lg border" style={{
-          backgroundColor: '#E8F5E9',
+          backgroundColor: COFFEE_PALETTE.cardBg,
           borderColor: COFFEE_PALETTE.success
         }}>
-          <p className="text-sm font-medium">{copyMessage}</p>
+          <p className="text-sm font-medium" style={{ color: COFFEE_PALETTE.success }}>{copyMessage}</p>
         </div>
       )}
 
       {error && (
         <div className="mb-6 p-4 rounded-lg border flex items-start gap-3"
-          style={{ backgroundColor: '#FFEBEE', borderColor: COFFEE_PALETTE.error }}>
+          style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.error }}>
           <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
             style={{ backgroundColor: COFFEE_PALETTE.error }}>
             <span className="text-white text-xs">!</span>
@@ -101,54 +101,64 @@ export default function PrinterPage() {
         </div>
       )}
 
-      <div className="mb-6 md:mb-8">
-        <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
-          Printers
-        </h2>
-        <div className="flex flex-wrap items-center gap-2 text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
-          <span>Manage and monitor all printer nodes</span>
-          {loading && <span className="animate-pulse text-xs italic">Loading...</span>}
+      <div className="mb-6 md:mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: "#E8E8E8" }}>
+            Printers
+          </h2>
+          <div className="flex flex-wrap items-center gap-2 text-sm" style={{ color: "#A0AEC0" }}>
+            <span>Manage and monitor all printer nodes</span>
+            {loading && <span className="animate-pulse text-xs italic">Loading...</span>}
+            {!loading && printers.length > 0 && (
+              <span className="px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: "rgba(255,255,255,0.12)", color: "#E8E8E8" }}>
+                {filteredPrinters.length} of {printers.length} printer{printers.length !== 1 ? "s" : ""}
+              </span>
+            )}
+          </div>
           {!loading && printers.length > 0 && (
-            <span className="bg-stone-100 px-2 py-0.5 rounded-full text-xs">
-              {filteredPrinters.length} of {printers.length} printer{printers.length !== 1 ? "s" : ""}
-            </span>
+            <div className="flex flex-wrap gap-2 mt-3">
+              {(["all", "visible", "hidden"] as const).map((key) => (
+                <button
+                  key={key}
+                  onClick={() => setVisibilityFilter(key)}
+                  className="px-3 py-1.5 rounded-md text-sm font-medium transition-opacity hover:opacity-90"
+                  style={{
+                    backgroundColor: visibilityFilter === key ? COFFEE_PALETTE.primary : COFFEE_PALETTE.cardBg,
+                    color: visibilityFilter === key ? "#FFFFFF" : COFFEE_PALETTE.textPrimary,
+                    border: `1px solid ${visibilityFilter === key ? COFFEE_PALETTE.primary : COFFEE_PALETTE.border}`,
+                  }}
+                >
+                  {key === "all" ? "All" : key === "visible" ? "Visible only" : "Hidden only"}
+                </button>
+              ))}
+            </div>
           )}
         </div>
-        {!loading && printers.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {(["all", "visible", "hidden"] as const).map((key) => (
-              <button
-                key={key}
-                onClick={() => setVisibilityFilter(key)}
-                className="px-3 py-1.5 rounded-md text-sm font-medium transition-opacity hover:opacity-90"
-                style={{
-                  backgroundColor: visibilityFilter === key ? COFFEE_PALETTE.primary : COFFEE_PALETTE.background,
-                  color: visibilityFilter === key ? "#FFFFFF" : COFFEE_PALETTE.textPrimary,
-                  border: `1px solid ${visibilityFilter === key ? COFFEE_PALETTE.primary : COFFEE_PALETTE.border}`,
-                }}
-              >
-                {key === "all" ? "All" : key === "visible" ? "Visible only" : "Hidden only"}
-              </button>
-            ))}
-          </div>
-        )}
+        <button
+          onClick={() => router.push("/setup")}
+          className="px-4 py-2 rounded-md font-medium transition-opacity hover:opacity-90 flex items-center gap-2 shrink-0"
+          style={{ backgroundColor: COFFEE_PALETTE.primary, color: COFFEE_PALETTE.cardBg }}
+        >
+          <Plus size={18} />
+          <span className="hidden sm:inline">Add Printer</span>
+        </button>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
             <Activity className="w-8 h-8 mx-auto mb-2 animate-spin" style={{ color: COFFEE_PALETTE.primary }} />
-            <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>Loading printers...</p>
+            <p className="text-sm" style={{ color: "#A0AEC0" }}>Loading printers...</p>
           </div>
         </div>
       ) : filteredPrinters.length === 0 ? (
         <div className="p-12 rounded-lg border-2 border-dashed text-center"
-          style={{ borderColor: COFFEE_PALETTE.border }}>
-          <PrinterIcon className="w-12 h-12 mx-auto mb-3 opacity-30" style={{ color: COFFEE_PALETTE.textSecondary }} />
-          <h3 className="text-lg font-semibold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
+          style={{ borderColor: "rgba(255,255,255,0.2)" }}>
+          <PrinterIcon className="w-12 h-12 mx-auto mb-3 opacity-50" style={{ color: "#A0AEC0" }} />
+          <h3 className="text-lg font-semibold mb-1" style={{ color: "#E8E8E8" }}>
             {printers.length === 0 ? "No Printers Found" : "No printers match filter"}
           </h3>
-          <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
+          <p className="text-sm" style={{ color: "#A0AEC0" }}>
             {printers.length === 0
               ? "Add printer documents in Setup page"
               : "Try switching to All or Visible only"}
@@ -171,7 +181,7 @@ export default function PrinterPage() {
                       className="w-12 h-12 rounded-lg flex items-center justify-center"
                       style={{ backgroundColor: COFFEE_PALETTE.background }}
                     >
-                      <PrinterIcon className="w-6 h-6" style={{ color: COFFEE_PALETTE.primary }} />
+                      <PrinterIcon className="w-6 h-6" style={{ color: "#E8E8E8" }} />
                     </div>
                     <div>
                       <p className="text-sm font-mono break-all" style={{ color: COFFEE_PALETTE.textSecondary }}>
@@ -236,10 +246,9 @@ export default function PrinterPage() {
                   </button>
                   <button
                     onClick={() => setExpandedPrinter(expandedPrinter === printer.id ? null : printer.id)}
-                    className="w-full py-2 px-4 rounded-md text-sm font-medium transition-opacity hover:opacity-80 flex items-center justify-center gap-2"
+                    className="text-white w-full py-2 px-4 rounded-md text-sm font-medium transition-opacity hover:opacity-80 flex items-center justify-center gap-2"
                     style={{
                       backgroundColor: COFFEE_PALETTE.background,
-                      color: COFFEE_PALETTE.primary
                     }}
                   >
                     <QrCode size={16} />

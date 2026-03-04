@@ -72,7 +72,7 @@ export default function TemplateDetailPage() {
     return (
       <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         <div className="flex items-center justify-center py-20">
-          <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>Loading template...</p>
+          <p className="text-sm opacity-80" style={{ color: COFFEE_PALETTE.cardBg }}>Loading template...</p>
         </div>
       </main>
     );
@@ -89,14 +89,14 @@ export default function TemplateDetailPage() {
           <ArrowLeft size={16} />
           Back to Templates
         </button>
-        <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
+        <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: COFFEE_PALETTE.cardBg }}>
           {templateId === 'new' ? 'Create New Template' : 'Edit Template'}
         </h2>
-        <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
+        <p className="text-sm opacity-80" style={{ color: COFFEE_PALETTE.cardBg }}>
           Configure line styles for receipt printing • 15 lines
         </p>
         <div className="mt-3 max-w-md">
-          <label className="block text-sm font-medium mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
+          <label className="block text-sm font-medium mb-1" style={{ color: COFFEE_PALETTE.cardBg }}>
             Template Name
           </label>
           <input
@@ -105,15 +105,15 @@ export default function TemplateDetailPage() {
             onChange={(e) => setTemplateName(e.target.value)}
             placeholder="e.g. Default Receipt"
             className="w-full px-3 py-2 rounded-md border text-sm"
-            style={{ borderColor: COFFEE_PALETTE.border, color: COFFEE_PALETTE.textPrimary }}
+            style={{ borderColor: COFFEE_PALETTE.background, color: COFFEE_PALETTE.background, backgroundColor: COFFEE_PALETTE.cardBg }}
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 space-y-4">
-          <div className="p-6 rounded-lg shadow-sm border" style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
-            <h3 className="text-lg font-semibold mb-4" style={{ color: COFFEE_PALETTE.textPrimary }}>
+          <div className="p-6 rounded-lg shadow-sm border" style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.background }}>
+            <h3 className="text-lg font-semibold mb-4" style={{ color: COFFEE_PALETTE.background }}>
               Receipt Lines
             </h3>
 
@@ -124,24 +124,23 @@ export default function TemplateDetailPage() {
                   onClick={() => setSelectedLine(index)}
                   className="p-3 rounded-md border cursor-pointer transition-all"
                   style={{
-                    backgroundColor: selectedLine === index ? COFFEE_PALETTE.background : COFFEE_PALETTE.cardBg,
-                    borderColor: selectedLine === index ? COFFEE_PALETTE.primary : COFFEE_PALETTE.border,
+                    borderColor: selectedLine === index ? COFFEE_PALETTE.primary : COFFEE_PALETTE.background,
                     borderWidth: selectedLine === index ? '2px' : '1px'
                   }}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                    <span className="text-sm font-medium " >
                       Line {index + 1}
                     </span>
-                    <span className="text-xs px-2 py-0.5 rounded" style={{
+                    <span className="text-xs px-2 py-0.5 rounded opacity-80" style={{
                       backgroundColor: COFFEE_PALETTE.background,
-                      color: COFFEE_PALETTE.textSecondary
+                      color: COFFEE_PALETTE.cardBg
                     }}>
                       {line.fontSize}px
                     </span>
                   </div>
 
-                  <div className="text-xs" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                  <div className="text-xs opacity-80" style={{ color: COFFEE_PALETTE.background }}>
                     {line.alignment} • {line.isBold ? 'Bold' : 'Normal'}
                   </div>
                 </div>
@@ -149,14 +148,14 @@ export default function TemplateDetailPage() {
             </div>
           </div>
 
-          <div className="p-6 rounded-lg shadow-sm border" style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
-            <h3 className="text-lg font-semibold mb-4" style={{ color: COFFEE_PALETTE.textPrimary }}>
+          <div className="p-6 rounded-lg shadow-sm border" style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.background }}>
+            <h3 className="text-lg font-semibold mb-4" style={{ color: COFFEE_PALETTE.background }}>
               Edit Line {selectedLine + 1}
             </h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.background }}>
                   Font Size: {lines[selectedLine].fontSize}px
                 </label>
                 <input
@@ -167,14 +166,14 @@ export default function TemplateDetailPage() {
                   onChange={(e) => handleUpdateLine(selectedLine, { fontSize: parseInt(e.target.value, 10) })}
                   className="w-full"
                 />
-                <div className="flex justify-between text-xs mt-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                <div className="flex justify-between text-xs mt-1 opacity-80" style={{ color: COFFEE_PALETTE.background }}>
                   <span>1px</span>
                   <span>8px</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                <label className="block text-sm font-medium mb-2" style={{ color: COFFEE_PALETTE.background }}>
                   Alignment
                 </label>
                 <select
@@ -182,8 +181,9 @@ export default function TemplateDetailPage() {
                   onChange={(e) => handleUpdateLine(selectedLine, { alignment: e.target.value as LineAlignment })}
                   className="w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2"
                   style={{
-                    borderColor: COFFEE_PALETTE.border,
-                    color: COFFEE_PALETTE.textPrimary
+                    borderColor: COFFEE_PALETTE.background,
+                    color: COFFEE_PALETTE.background,
+                    backgroundColor: COFFEE_PALETTE.cardBg
                   }}
                 >
                   <option value={LineAlignment.LEFT}>Left</option>
@@ -200,7 +200,7 @@ export default function TemplateDetailPage() {
                     onChange={(e) => handleUpdateLine(selectedLine, { isBold: e.target.checked })}
                     className="w-4 h-4 rounded"
                   />
-                  <span className="text-sm font-medium" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                  <span className="text-sm font-medium" style={{ color: COFFEE_PALETTE.background }}>
                     Bold Text
                   </span>
                 </label>
@@ -211,8 +211,8 @@ export default function TemplateDetailPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="w-full py-3 rounded-md font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
-            style={{ backgroundColor: COFFEE_PALETTE.success }}
+            className="w-full py-3 rounded-md font-medium transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+            style={{ backgroundColor: COFFEE_PALETTE.primary, color: COFFEE_PALETTE.cardBg }}
           >
             {saving ? (
               <>
@@ -229,10 +229,10 @@ export default function TemplateDetailPage() {
         </div>
 
         <div className="lg:col-span-2">
-          <div className="p-6 rounded-lg shadow-sm border sticky top-4" style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}>
+          <div className="p-6 rounded-lg shadow-sm border sticky top-4" style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.background }}>
             <div className="flex items-center gap-2 mb-4">
               <FileText className="w-5 h-5" style={{ color: COFFEE_PALETTE.primary }} />
-              <h3 className="text-lg font-semibold" style={{ color: COFFEE_PALETTE.textPrimary }}>
+              <h3 className="text-lg font-semibold" style={{ color: COFFEE_PALETTE.background }}>
                 Receipt Preview
               </h3>
             </div>
@@ -246,10 +246,10 @@ export default function TemplateDetailPage() {
             />
 
             <div className="mt-4 p-3 rounded-md" style={{ backgroundColor: COFFEE_PALETTE.background }}>
-              <p className="text-xs font-medium mb-2" style={{ color: COFFEE_PALETTE.textPrimary }}>
+              <p className="text-xs font-medium mb-2" style={{ color: COFFEE_PALETTE.cardBg }}>
                 Preview Notes:
               </p>
-              <ul className="text-xs space-y-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
+              <ul className="text-xs space-y-1 opacity-80" style={{ color: COFFEE_PALETTE.cardBg }}>
                 <li>• Click on any line to edit its style</li>
                 <li>• Each line can have independent styling (font size 1–8px)</li>
                 <li>• Preview is scaled so small sizes are readable; receipt will use 1–8px</li>

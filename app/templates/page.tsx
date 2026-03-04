@@ -38,17 +38,17 @@ export default function TemplatesPage() {
     <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
       <div className="mb-6 md:mb-8 flex items-center justify-between">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
+          <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: COFFEE_PALETTE.cardBg }}>
             Receipt Templates
           </h2>
-          <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
+          <p className="text-sm opacity-80" style={{ color: COFFEE_PALETTE.cardBg }}>
             Manage and configure receipt printing templates • {lineDecorations.length} template{lineDecorations.length !== 1 ? 's' : ''}
           </p>
         </div>
         <button
           onClick={handleCreateTemplate}
-          className="px-4 py-2 rounded-md font-medium text-white transition-opacity hover:opacity-90 flex items-center gap-2"
-          style={{ backgroundColor: COFFEE_PALETTE.primary }}
+          className="px-4 py-2 rounded-md font-medium transition-opacity hover:opacity-90 flex items-center gap-2"
+          style={{ backgroundColor: COFFEE_PALETTE.primary, color: COFFEE_PALETTE.cardBg }}
         >
           <Plus size={18} />
           <span className="hidden sm:inline">New Template</span>
@@ -57,13 +57,13 @@ export default function TemplatesPage() {
 
       {error && (
         <div className="mb-6 p-4 rounded-lg border flex items-start gap-3"
-          style={{ backgroundColor: COFFEE_PALETTE.warningBg, borderColor: COFFEE_PALETTE.error }}>
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: COFFEE_PALETTE.error }} />
+          style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.primary }}>
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: COFFEE_PALETTE.primary }} />
           <div>
-            <h4 className="font-semibold text-sm mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
+            <h4 className="font-semibold text-sm mb-1" style={{ color: COFFEE_PALETTE.primary }}>
               Firebase Connection Error
             </h4>
-            <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>{error}</p>
+            <p className="text-sm" style={{ color: COFFEE_PALETTE.background }}>{error}</p>
           </div>
         </div>
       )}
@@ -72,25 +72,25 @@ export default function TemplatesPage() {
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
             <Activity className="w-8 h-8 mx-auto mb-2 animate-spin" style={{ color: COFFEE_PALETTE.primary }} />
-            <p className="text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>Loading templates...</p>
+            <p className="text-sm opacity-80" style={{ color: COFFEE_PALETTE.cardBg }}>Loading templates...</p>
           </div>
         </div>
       )}
 
       {!loading && !error && lineDecorations.length === 0 && (
         <div className="p-12 rounded-lg border-2 border-dashed text-center"
-          style={{ borderColor: COFFEE_PALETTE.border }}>
-          <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" style={{ color: COFFEE_PALETTE.textSecondary }} />
-          <h3 className="text-lg font-semibold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>
+          style={{ borderColor: 'rgba(255,255,255,0.2)' }}>
+          <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" style={{ color: COFFEE_PALETTE.cardBg }} />
+          <h3 className="text-lg font-semibold mb-1" style={{ color: COFFEE_PALETTE.cardBg }}>
             No Templates Found
           </h3>
-          <p className="text-sm mb-4" style={{ color: COFFEE_PALETTE.textSecondary }}>
+          <p className="text-sm mb-4 opacity-80" style={{ color: COFFEE_PALETTE.cardBg }}>
             Create your first receipt template to get started
           </p>
           <button
             onClick={handleCreateTemplate}
-            className="px-6 py-2 rounded-md font-medium text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: COFFEE_PALETTE.primary }}
+            className="px-6 py-2 rounded-md font-medium transition-opacity hover:opacity-90"
+            style={{ backgroundColor: COFFEE_PALETTE.primary, color: COFFEE_PALETTE.cardBg }}
           >
             Create Template
           </button>
@@ -103,19 +103,19 @@ export default function TemplatesPage() {
             <div
               key={lineDecoration.id}
               className="rounded-lg shadow-sm border overflow-hidden transition-all hover:shadow-md"
-              style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.border }}
+              style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.background }}
             >
-              <div className="p-4 border-b" style={{ borderColor: COFFEE_PALETTE.border }}>
+              <div className="p-4 border-b" style={{ borderColor: COFFEE_PALETTE.background }}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FileText className="w-5 h-5" style={{ color: COFFEE_PALETTE.primary }} />
-                    <h3 className="font-semibold text-base" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                    <h3 className="font-semibold text-base" style={{ color: COFFEE_PALETTE.background }}>
                       Template {lineDecoration.templateName}
                     </h3>
                   </div>
-                  <span className="text-xs px-2 py-1 rounded" style={{
+                  <span className="text-xs px-2 py-1 rounded opacity-80" style={{
                     backgroundColor: COFFEE_PALETTE.background,
-                    color: COFFEE_PALETTE.textSecondary
+                    color: COFFEE_PALETTE.cardBg
                   }}>
                     15 lines
                   </span>
@@ -130,13 +130,13 @@ export default function TemplatesPage() {
               </div>
 
               <div className="p-3 border-t flex items-center justify-between gap-2"
-                style={{ borderColor: COFFEE_PALETTE.border }}>
+                style={{ borderColor: COFFEE_PALETTE.background }}>
                 <button
                   onClick={() => router.push(`/templates/${lineDecoration.id}`)}
                   className="flex-1 py-2 px-3 rounded-md text-sm font-medium transition-opacity hover:opacity-80 flex items-center justify-center gap-2"
                   style={{
                     backgroundColor: COFFEE_PALETTE.primary,
-                    color: '#FFFFFF'
+                    color: COFFEE_PALETTE.cardBg
                   }}
                 >
                   <Edit size={14} />
@@ -150,8 +150,8 @@ export default function TemplatesPage() {
                   disabled={deletingId === lineDecoration.id}
                   className="p-2 rounded-md hover:opacity-80 transition-opacity disabled:opacity-50"
                   style={{
-                    backgroundColor: '#FFEBEE',
-                    color: COFFEE_PALETTE.error
+                    backgroundColor: COFFEE_PALETTE.background,
+                    color: COFFEE_PALETTE.primary
                   }}
                 >
                   {deletingId === lineDecoration.id ? (

@@ -25,7 +25,7 @@ export default function DashboardPage() {
             {/* Error Alert */}
             {error && (
                 <div className="mb-6 p-4 rounded-lg border flex flex-col sm:flex-row items-start gap-3"
-                    style={{ backgroundColor: '#FFEBEE', borderColor: COFFEE_PALETTE.error }}>
+                    style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.error }}>
                     <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
                         style={{ backgroundColor: COFFEE_PALETTE.error }}>
                         <span className="text-white text-xs">!</span>
@@ -44,12 +44,12 @@ export default function DashboardPage() {
 
             {/* Page Header */}
             <div className="mb-6 md:mb-8">
-                <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: COFFEE_PALETTE.textPrimary }}>Overview</h2>
-                <div className="flex flex-wrap items-center gap-2 text-sm" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                <h2 className="text-xl md:text-2xl font-bold mb-1 text-white">Overview</h2>
+                <div className="flex flex-wrap items-center gap-2 text-sm text-white">
                     <span>Real-time monitoring of all printer nodes</span>
                     {loading && <span className="animate-pulse text-xs italic">⏳ Loading...</span>}
                     {!loading && printers.length > 0 && (
-                        <span className="bg-stone-100 px-2 py-0.5 rounded-full text-xs">
+                        <span className="bg-white px-2 py-0.5 rounded-full text-xs text-black">
                             {printers.length} connected
                         </span>
                     )}

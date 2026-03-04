@@ -59,16 +59,16 @@ export default function ReceiptCard({
             className="rounded-lg border shadow-sm p-6 h-full flex flex-col"
             style={{
                 backgroundColor: COFFEE_PALETTE.cardBg,
-                borderColor: COFFEE_PALETTE.border
+                borderColor: COFFEE_PALETTE.background
             }}
         >
             {isEditing ? (
                 <div className="space-y-4 flex-1">
-                    <h3 className="font-bold text-lg mb-4" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                    <h3 className="font-bold text-lg mb-4" style={{ color: COFFEE_PALETTE.background }}>
                         Edit Receipt
                     </h3>
                     <div>
-                        <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                        <label className="text-xs font-semibold uppercase mb-1 block opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                             Label
                         </label>
                         <input
@@ -79,13 +79,13 @@ export default function ReceiptCard({
                             className="w-full px-3 py-2 rounded-md border text-sm mb-4"
                             style={{
                                 backgroundColor: COFFEE_PALETTE.cardBg,
-                                borderColor: COFFEE_PALETTE.border,
-                                color: COFFEE_PALETTE.textPrimary
+                                borderColor: COFFEE_PALETTE.background,
+                                color: COFFEE_PALETTE.background
                             }}
                         />
                     </div>
                     <div>
-                        <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                        <label className="text-xs font-semibold uppercase mb-1 block opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                             Status
                         </label>
                         <select
@@ -94,8 +94,8 @@ export default function ReceiptCard({
                             className="w-full px-3 py-2 rounded-md border text-sm"
                             style={{
                                 backgroundColor: COFFEE_PALETTE.cardBg,
-                                borderColor: COFFEE_PALETTE.border,
-                                color: COFFEE_PALETTE.textPrimary
+                                borderColor: COFFEE_PALETTE.background,
+                                color: COFFEE_PALETTE.background
                             }}
                         >
                             {Object.values(PrintQueueStatus).map(status => (
@@ -104,7 +104,7 @@ export default function ReceiptCard({
                         </select>
                     </div>
                     <div>
-                        <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                        <label className="text-xs font-semibold uppercase mb-1 block opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                             Print time
                         </label>
                         <div className="flex flex-wrap gap-2">
@@ -118,9 +118,9 @@ export default function ReceiptCard({
                                         className="px-3 py-1.5 rounded-full text-sm font-medium transition-all"
                                         style={{
                                             backgroundColor: isSelected ? COFFEE_PALETTE.primary : COFFEE_PALETTE.background,
-                                            color: isSelected ? '#FFFFFF' : COFFEE_PALETTE.textPrimary,
+                                            color: COFFEE_PALETTE.cardBg,
                                             borderWidth: 1,
-                                            borderColor: isSelected ? COFFEE_PALETTE.primary : COFFEE_PALETTE.border
+                                            borderColor: isSelected ? COFFEE_PALETTE.primary : COFFEE_PALETTE.background
                                         }}
                                     >
                                         {label}
@@ -128,12 +128,12 @@ export default function ReceiptCard({
                                 );
                             })}
                         </div>
-                        <p className="text-xs mt-1" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                        <p className="text-xs mt-1 opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                             Print at: {formData.printTime.toLocaleString()}
                         </p>
                     </div>
                     <div>
-                        <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                        <label className="text-xs font-semibold uppercase mb-1 block opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                             Lines
                         </label>
                         <div className="max-h-48 overflow-y-auto space-y-2">
@@ -147,8 +147,8 @@ export default function ReceiptCard({
                                         className="flex-1 px-3 py-2 rounded-md border text-sm resize-y min-h-16"
                                         style={{
                                             backgroundColor: COFFEE_PALETTE.cardBg,
-                                            borderColor: COFFEE_PALETTE.border,
-                                            color: COFFEE_PALETTE.textPrimary
+                                            borderColor: COFFEE_PALETTE.background,
+                                            color: COFFEE_PALETTE.background
                                         }}
                                     />
                                 </div>
@@ -160,8 +160,8 @@ export default function ReceiptCard({
                             onClick={() => onUpdate(queue.id)}
                             className="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-opacity hover:opacity-90 flex items-center justify-center gap-2"
                             style={{
-                                backgroundColor: COFFEE_PALETTE.success,
-                                color: '#FFFFFF'
+                                backgroundColor: COFFEE_PALETTE.primary,
+                                color: COFFEE_PALETTE.cardBg
                             }}
                         >
                             <Save className="w-4 h-4" />
@@ -172,7 +172,7 @@ export default function ReceiptCard({
                             className="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-opacity hover:opacity-90 flex items-center justify-center gap-2"
                             style={{
                                 backgroundColor: COFFEE_PALETTE.background,
-                                color: COFFEE_PALETTE.textPrimary
+                                color: COFFEE_PALETTE.cardBg
                             }}
                         >
                             <X className="w-4 h-4" />
@@ -198,16 +198,16 @@ export default function ReceiptCard({
                                     Job #{queue.jobId}
                                 </span>
                                 {queue.label ? (
-                                    <span className="text-xs truncate shrink min-w-0 max-w-[80px] sm:max-w-[120px]" style={{ color: COFFEE_PALETTE.textPrimary }} title={queue.label}>
+                                    <span className="text-xs truncate shrink min-w-0 max-w-[80px] sm:max-w-[120px]" style={{ color: COFFEE_PALETTE.background }} title={queue.label}>
                                         {queue.label}
                                     </span>
                                 ) : null}
-                                <span className="text-xs font-mono shrink-0" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                <span className="text-xs font-mono shrink-0 opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                                     {queue.printerId}
                                 </span>
                             </div>
                             {queue.printTime && (
-                                <p className="text-xs" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                <p className="text-xs opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                                     Print at: {new Date(queue.printTime).toLocaleString()}
                                 </p>
                             )}
@@ -223,25 +223,25 @@ export default function ReceiptCard({
                             <button
                                 onClick={() => onDelete(queue.id)}
                                 className="p-2 rounded-md transition-opacity hover:opacity-80"
-                                style={{ backgroundColor: COFFEE_PALETTE.error + '20' }}
+                                style={{ backgroundColor: COFFEE_PALETTE.background }}
                             >
-                                <Trash2 className="w-4 h-4" style={{ color: COFFEE_PALETTE.error }} />
+                                <Trash2 className="w-4 h-4" style={{ color: COFFEE_PALETTE.primary }} />
                             </button>
                         </div>
                     </div>
-                    <div className="mt-4 pt-4 border-t flex-1" style={{ borderColor: COFFEE_PALETTE.border }}>
-                        <label className="text-xs font-semibold uppercase mb-2 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                    <div className="mt-4 pt-4 border-t flex-1" style={{ borderColor: COFFEE_PALETTE.background }}>
+                        <label className="text-xs font-semibold uppercase mb-2 block opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                             Receipt Lines
                         </label>
                         <div className="space-y-1 max-h-48 overflow-y-auto">
                             {queue.lines.length > 0 ? (
                                 queue.lines.map((line, index) => (
-                                    <p key={index} className="text-sm font-mono whitespace-pre-line" style={{ color: COFFEE_PALETTE.textPrimary }}>
+                                    <p key={index} className="text-sm font-mono whitespace-pre-line" style={{ color: COFFEE_PALETTE.background }}>
                                         {typeof line === "string" ? line.replace(/\\n/g, "\n") : line}
                                     </p>
                                 ))
                             ) : (
-                                <p className="text-sm italic" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                <p className="text-sm italic opacity-70" style={{ color: COFFEE_PALETTE.background }}>
                                     No lines
                                 </p>
                             )}
