@@ -16,12 +16,14 @@ interface ReceiptCardProps {
     queue: PrintQueue;
     editingId: string | null;
     formData: {
+        label: string;
         status: PrintQueueStatus;
         lines: string[];
         printTime: Date;
     };
     onStartEdit: (queue: PrintQueue) => void;
     onUpdate: (id: string) => void;
+    onUpdateLabel: (label: string) => void;
     onDelete: (id: string) => void;
     onCancelEdit: () => void;
     onUpdateLine: (index: number, value: string) => void;
@@ -45,6 +47,7 @@ export default function ReceiptCard({
     onAddLine,
     onRemoveLine,
     onUpdateStatus,
+    onUpdateLabel,
     setPrintTimeFromOption,
     selectedPrintTimeOption,
     getStatusColor
@@ -64,6 +67,23 @@ export default function ReceiptCard({
                     <h3 className="font-bold text-lg mb-4" style={{ color: COFFEE_PALETTE.textPrimary }}>
                         Edit Receipt
                     </h3>
+                    <div>
+                        <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                            Label
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.label}
+                            onChange={(e) => onUpdateLabel(e.target.value)}
+                            placeholder="e.g. ORDER #55"
+                            className="w-full px-3 py-2 rounded-md border text-sm mb-4"
+                            style={{
+                                backgroundColor: COFFEE_PALETTE.cardBg,
+                                borderColor: COFFEE_PALETTE.border,
+                                color: COFFEE_PALETTE.textPrimary
+                            }}
+                        />
+                    </div>
                     <div>
                         <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
                             Status
@@ -162,11 +182,11 @@ export default function ReceiptCard({
                 </div>
             ) : (
                 <>
-                    <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-start justify-between gap-2 mb-4">
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2 min-w-0">
                                 <span
-                                    className="px-3 py-1 rounded-full text-xs font-semibold"
+                                    className="shrink-0 px-3 py-1 rounded-full text-xs font-semibold"
                                     style={{
                                         backgroundColor: getStatusColor(queue.status) + '20',
                                         color: getStatusColor(queue.status)
@@ -174,7 +194,15 @@ export default function ReceiptCard({
                                 >
                                     {queue.status}
                                 </span>
-                                <span className="text-xs font-mono" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                <span className="text-xs font-semibold truncate min-w-0 max-w-[100px] sm:max-w-[140px]" style={{ color: COFFEE_PALETTE.primary }} title={`Job #${queue.jobId}`}>
+                                    Job #{queue.jobId}
+                                </span>
+                                {queue.label ? (
+                                    <span className="text-xs truncate shrink min-w-0 max-w-[80px] sm:max-w-[120px]" style={{ color: COFFEE_PALETTE.textPrimary }} title={queue.label}>
+                                        {queue.label}
+                                    </span>
+                                ) : null}
+                                <span className="text-xs font-mono shrink-0" style={{ color: COFFEE_PALETTE.textSecondary }}>
                                     {queue.printerId}
                                 </span>
                             </div>
@@ -184,7 +212,7 @@ export default function ReceiptCard({
                                 </p>
                             )}
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 shrink-0">
                             <button
                                 onClick={() => onStartEdit(queue)}
                                 className="p-2 rounded-md transition-opacity hover:opacity-80"

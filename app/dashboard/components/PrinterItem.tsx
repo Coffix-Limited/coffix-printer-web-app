@@ -14,7 +14,7 @@ export default function PrinterItem({
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: printer.isOnline ? COFFEE_PALETTE.success : COFFEE_PALETTE.error }}></div>
-                    <span className="font-bold" style={{ color: COFFEE_PALETTE.textPrimary }}>{printer.label}</span>
+                    <span className="font-bold" style={{ color: COFFEE_PALETTE.textPrimary }}>{printer.id}</span>
                 </div>
                 <span className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: printer.isOnline ? COFFEE_PALETTE.success : COFFEE_PALETTE.error }}>
                     {printer.isOnline ? 'Connected' : 'Disconnected'}

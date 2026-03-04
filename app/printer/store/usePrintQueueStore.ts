@@ -9,7 +9,7 @@ interface PrintQueueStore {
     loading: boolean;
     error: string | null;
     setPrintQueue: (printerId: string) => void;
-    createPrintQueue: (printQueue: Omit<PrintQueue, 'id'>) => Promise<void>;
+    createPrintQueue: (printQueue: Omit<PrintQueue, 'id' | 'jobId'>) => Promise<void>;
     updatePrintQueue: (printQueue: PrintQueue) => Promise<void>;
     deletePrintQueue: (id: string) => Promise<void>;
 }
@@ -46,7 +46,7 @@ export const usePrintQueueStore = create<PrintQueueStore>((set, get) => ({
 
         set({ unsubscribe: unsubscribeListener });
     },
-    createPrintQueue: async (printQueue: Omit<PrintQueue, 'id'>) => {
+    createPrintQueue: async (printQueue: Omit<PrintQueue, 'id' | 'jobId'>) => {
         try {
             await PrintQueueService.createPrintQueue(printQueue);
         } catch (error) {

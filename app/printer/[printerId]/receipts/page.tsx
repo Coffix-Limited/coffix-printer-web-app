@@ -44,6 +44,7 @@ export default function ReceiptsPage() {
     const [templateNameFilter, setTemplateNameFilter] = useState<string | 'DEFAULT'>('DEFAULT');
     const [selectedPrintTimeOption, setSelectedPrintTimeOption] = useState<number>(0);
     const [formData, setFormData] = useState({
+        label: "",
         status: PrintQueueStatus.PENDING,
         lines: [...SAMPLE_LINES] as string[],
         printTime: new Date(),
@@ -64,6 +65,7 @@ export default function ReceiptsPage() {
     const handleCreate = async () => {
         try {
             await createPrintQueue({
+                label: formData.label.trim(),
                 printerId: printerId,
                 status: formData.status,
                 lines: formData.lines,
@@ -72,6 +74,7 @@ export default function ReceiptsPage() {
             });
             setIsCreating(false);
             setFormData({
+                label: "",
                 status: PrintQueueStatus.PENDING,
                 lines: [...SAMPLE_LINES],
                 printTime: new Date(),
@@ -89,12 +92,14 @@ export default function ReceiptsPage() {
 
             await updatePrintQueue({
                 ...queue,
+                label: formData.label.trim(),
                 status: formData.status,
                 lines: formData.lines,
                 printTime: formData.printTime,
             });
             setEditingId(null);
             setFormData({
+                label: "",
                 status: PrintQueueStatus.PENDING,
                 lines: [...SAMPLE_LINES],
                 printTime: new Date(),
@@ -122,6 +127,7 @@ export default function ReceiptsPage() {
         const option = PRINT_TIME_OPTIONS.find(o => Math.abs(o.minutes - diffMinutes) < 0.5);
         setSelectedPrintTimeOption(option?.minutes ?? 0);
         setFormData({
+            label: queue.label ?? "",
             status: queue.status,
             lines: queue.lines.length > 0 ? queue.lines : [''],
             printTime,
@@ -133,6 +139,7 @@ export default function ReceiptsPage() {
         setIsCreating(false);
         setSelectedPrintTimeOption(0);
         setFormData({
+            label: "",
             status: PrintQueueStatus.PENDING,
             lines: [...SAMPLE_LINES],
             printTime: new Date(),
@@ -222,6 +229,7 @@ export default function ReceiptsPage() {
                             setIsCreating(true);
                             setSelectedPrintTimeOption(0);
                             setFormData({
+                                label: "",
                                 status: PrintQueueStatus.PENDING,
                                 lines: [...SAMPLE_LINES],
                                 printTime: new Date(),
@@ -254,6 +262,23 @@ export default function ReceiptsPage() {
                         Create New Receipt
                     </h3>
                     <div className="space-y-4">
+                        <div>
+                            <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
+                                Label
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.label}
+                                onChange={(e) => setFormData(prev => ({ ...prev, label: e.target.value }))}
+                                placeholder="e.g. ORDER #55, INVOICE x10"
+                                className="w-full px-3 py-2 rounded-md border text-sm"
+                                style={{
+                                    backgroundColor: COFFEE_PALETTE.cardBg,
+                                    borderColor: COFFEE_PALETTE.border,
+                                    color: COFFEE_PALETTE.textPrimary
+                                }}
+                            />
+                        </div>
                         <div>
                             <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
                                 Status
@@ -419,6 +444,7 @@ export default function ReceiptsPage() {
                             onAddLine={addLine}
                             onRemoveLine={removeLine}
                             onUpdateStatus={(status) => setFormData(prev => ({ ...prev, status }))}
+                            onUpdateLabel={(label) => setFormData(prev => ({ ...prev, label }))}
                             setPrintTimeFromOption={setPrintTimeFromOption}
                             selectedPrintTimeOption={selectedPrintTimeOption}
                             getStatusColor={getStatusColor}
