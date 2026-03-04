@@ -62,7 +62,8 @@ export default function TemplateDetailPage() {
       router.push('/templates');
     } catch (error) {
       console.error('Failed to save template:', error);
-      alert('Failed to save template');
+      const message = error instanceof Error ? error.message : 'Failed to save template';
+      alert(message);
     } finally {
       setSaving(false);
     }

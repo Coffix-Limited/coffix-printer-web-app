@@ -1,6 +1,19 @@
 import { db } from "@/app/utils/firebase.browser";
 import { LineDecoration, LineAlignment, LineStyle } from "../interface/LineDecoration";
-import { addDoc, collection, onSnapshot, getDoc, doc, setDoc, deleteDoc } from "firebase/firestore";
+import { addDoc, collection, onSnapshot, getDoc, doc, setDoc, deleteDoc, query, where, getDocs } from "firebase/firestore";
+
+const TEMPLATE_NAME_EXISTS = "A template with this name already exists.";
+
+async function isTemplateNameTaken(name: string, excludeId?: string): Promise<boolean> {
+    const q = query(
+        collection(db, "lineDecoration"),
+        where("templateName", "==", name.trim())
+    );
+    const snapshot = await getDocs(q);
+    if (!excludeId) return !snapshot.empty;
+    const takenByOther = snapshot.docs.some((d) => d.id !== excludeId);
+    return takenByOther;
+}
 
 const DEFAULT_LINES: LineStyle[] = Array(15).fill(null).map(() => ({
     fontSize: 14,
@@ -45,8 +58,10 @@ export const LineDecorationService = {
 
     async createTemplate(name: string): Promise<string> {
         try {
+            const taken = await isTemplateNameTaken(name);
+            if (taken) throw new Error(TEMPLATE_NAME_EXISTS);
             const docRef = await addDoc(collection(db, "lineDecoration"), {
-                templateName: name,
+                templateName: name.trim(),
                 lines: DEFAULT_LINES,
                 createdAt: new Date(),
                 updatedAt: new Date()
@@ -81,9 +96,11 @@ export const LineDecorationService = {
 
     async updateTemplate(template: LineDecoration): Promise<void> {
         try {
+            const taken = await isTemplateNameTaken(template.templateName, template.id);
+            if (taken) throw new Error(TEMPLATE_NAME_EXISTS);
             const docRef = doc(db, "lineDecoration", template.id);
             await setDoc(docRef, {
-                templateName: template.templateName,
+                templateName: template.templateName.trim(),
                 lines: template.lines,
                 updatedAt: new Date()
             }, { merge: true });
