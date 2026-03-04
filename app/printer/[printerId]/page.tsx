@@ -342,8 +342,8 @@ export default function PrinterDetailsPage() {
                                     }}
                                 >
                                     {lineDecorations.map((template) => (
-                                        <option key={template.id} value={template.id}>
-                                            {template.templateName.slice(0, 8)}
+                                        <option key={template.id} value={template.templateName}>
+                                            {template.templateName}
                                         </option>
                                     ))}
                                 </select>

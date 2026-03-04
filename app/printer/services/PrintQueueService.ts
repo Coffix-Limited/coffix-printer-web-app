@@ -17,6 +17,19 @@ import { db } from "@/app/utils/firebase.browser";
 const COUNTER_DOC = "printQueueJob";
 const COUNTER_COLLECTION = "counters";
 
+const trimTrailingEmptyLines = (lines: string[]): string[] => {
+  const result = [...lines];
+  while (result.length > 0) {
+    const last = result[result.length - 1];
+    if (typeof last === "string" && last.trim() === "") {
+      result.pop();
+    } else {
+      break;
+    }
+  }
+  return result;
+};
+
 export const PrintQueueService = {
   subscribeToPrintQueues(
     printerId: string,
@@ -76,8 +89,11 @@ export const PrintQueueService = {
     }
   },
 
-  async createPrintQueue(printQueue: Omit<PrintQueue, "id" | "jobId">): Promise<string> {
+  async createPrintQueue(
+    printQueue: Omit<PrintQueue, "id" | "jobId">,
+  ): Promise<string> {
     try {
+      const cleanedLines = trimTrailingEmptyLines(printQueue.lines);
       const counterRef = doc(db, COUNTER_COLLECTION, COUNTER_DOC);
       const nextJobNum = await runTransaction(db, async (tx) => {
         const snap = await tx.get(counterRef);
@@ -92,7 +108,7 @@ export const PrintQueueService = {
         label: printQueue.label ?? "",
         printerId: printQueue.printerId,
         status: printQueue.status,
-        lines: printQueue.lines,
+        lines: cleanedLines,
         printTime: Timestamp.fromDate(printQueue.printTime),
         templateName: printQueue.templateName ?? "",
       });
@@ -106,12 +122,13 @@ export const PrintQueueService = {
 
   async updatePrintQueue(printQueue: PrintQueue): Promise<void> {
     try {
+      const cleanedLines = trimTrailingEmptyLines(printQueue.lines);
       const printQueueRef = doc(db, "printQueue", printQueue.id);
       await updateDoc(printQueueRef, {
         label: printQueue.label ?? "",
         printerId: printQueue.printerId,
         status: printQueue.status,
-        lines: printQueue.lines,
+        lines: cleanedLines,
         printTime: Timestamp.fromDate(printQueue.printTime),
         templateName: printQueue.templateName ?? "",
       });

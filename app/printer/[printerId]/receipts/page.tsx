@@ -362,7 +362,7 @@ export default function ReceiptsPage() {
                                             color: COFFEE_PALETTE.textPrimary
                                         }}
                                     />
-                                    {/* {formData.lines.length > 1 && (
+                                    {formData.lines.length > 1 && (
                                         <button
                                             type="button"
                                             onClick={() => removeLine(index)}
@@ -371,20 +371,21 @@ export default function ReceiptsPage() {
                                         >
                                             <X className="w-4 h-4" />
                                         </button>
-                                    )} */}
+                                    )}
                                 </div>
                             ))}
-                            {/* <button
-                                type="button"
-                                onClick={addLine}
-                                className="mt-2 px-3 py-1.5 rounded-md text-sm font-medium transition-opacity hover:opacity-90"
-                                style={{
-                                    backgroundColor: COFFEE_PALETTE.background,
-                                    color: COFFEE_PALETTE.primary
-                                }}
-                            >
-                                + Add line
-                            </button> */}
+                            {formData.lines.length < 15 &&
+                                <button
+                                    type="button"
+                                    onClick={addLine}
+                                    className="mt-2 px-3 py-1.5 rounded-md text-sm font-medium transition-opacity hover:opacity-90"
+                                    style={{
+                                        backgroundColor: COFFEE_PALETTE.background,
+                                        color: COFFEE_PALETTE.primary
+                                    }}
+                                >
+                                    + Add line
+                                </button>}
                         </div>
                         <div className="flex gap-2">
                             <button
