@@ -12,7 +12,8 @@ import {
     Activity,
     Search,
     Filter,
-    X
+    X,
+    Download
 } from "lucide-react";
 import { Log } from "./interface/Log";
 
@@ -80,6 +81,31 @@ export default function LogsPage() {
         };
     }, [logs]);
 
+    const exportCsv = () => {
+        const headers = ["level", "message", "id", "printerId", "serverId", "timestamp"];
+        const escape = (v: string | undefined) => {
+            if (v == null) return "";
+            const s = String(v);
+            return s.includes(",") || s.includes('"') || s.includes("\n") ? `"${s.replace(/"/g, '""')}"` : s;
+        };
+        const rows = logs.map((log) => [
+            escape(log.level),
+            escape(log.message ?? ""),
+            escape(log.id ?? ""),
+            escape(log.printerId ?? ""),
+            escape(log.serverId ?? ""),
+            escape(log.timestamp != null ? (log.timestamp instanceof Date ? log.timestamp : new Date(log.timestamp)).toISOString() : ""),
+        ]);
+        const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `logs-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
     return (
         <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
             {error && (
@@ -124,7 +150,7 @@ export default function LogsPage() {
                             style={{ color: COFFEE_PALETTE.background }} />
                         <input
                             type="text"
-                            placeholder="Search logs..."
+                            placeholder="Search by id, message, printerId, serverId..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-10 py-2 rounded-md border focus:outline-none focus:ring-2"
@@ -143,7 +169,20 @@ export default function LogsPage() {
                         )}
                     </div>
 
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex gap-2 flex-wrap items-center">
+                        <button
+                            onClick={exportCsv}
+                            disabled={logs.length === 0}
+                            className="px-4 py-2 rounded-md text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
+                            style={{
+                                backgroundColor: COFFEE_PALETTE.background,
+                                color: COFFEE_PALETTE.cardBg,
+                                border: `1px solid ${COFFEE_PALETTE.background}`
+                            }}
+                        >
+                            <Download className="w-4 h-4" />
+                            Export CSV
+                        </button>
                         <button
                             onClick={() => setFilterLevel(null)}
                             className="px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2"

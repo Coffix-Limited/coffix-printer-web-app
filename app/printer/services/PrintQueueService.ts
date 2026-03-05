@@ -89,22 +89,12 @@ export const PrintQueueService = {
     }
   },
 
-  async createPrintQueue(
-    printQueue: Omit<PrintQueue, "id" | "jobId">,
-  ): Promise<string> {
+  async createPrintQueue(printQueue: Omit<PrintQueue, "id" | "jobId">): Promise<void> {
     try {
       const cleanedLines = trimTrailingEmptyLines(printQueue.lines);
-      const counterRef = doc(db, COUNTER_COLLECTION, COUNTER_DOC);
-      const nextJobNum = await runTransaction(db, async (tx) => {
-        const snap = await tx.get(counterRef);
-        const next = (snap.exists() ? (snap.data()?.next ?? 0) : 0) + 1;
-        tx.set(counterRef, { next }, { merge: true });
-        return next;
-      });
-      const jobId = String(nextJobNum);
-      const docRef = doc(db, "printQueue", jobId);
+      const docRef = doc(db, "printQueue");
+      const docId = docRef.id;
       await setDoc(docRef, {
-        jobId,
         label: printQueue.label ?? "",
         printerId: printQueue.printerId,
         status: printQueue.status,
@@ -112,8 +102,7 @@ export const PrintQueueService = {
         printTime: Timestamp.fromDate(printQueue.printTime),
         templateName: printQueue.templateName ?? "",
       });
-      console.log("✅ Print queue created: Job #" + jobId);
-      return jobId;
+      console.log("✅ Print queue created: " + docId);
     } catch (error) {
       console.error("❌ Failed to create print queue:", error);
       throw error;
