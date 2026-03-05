@@ -60,14 +60,14 @@ export const LineDecorationService = {
         try {
             const taken = await isTemplateNameTaken(name);
             if (taken) throw new Error(TEMPLATE_NAME_EXISTS);
-            const docRef = await addDoc(collection(db, "lineDecoration"), {
+            const docRef = doc(collection(db, "lineDecoration"));
+            await setDoc(docRef, {
+                id: docRef.id,
                 templateName: name.trim(),
                 lines: DEFAULT_LINES,
-                createdAt: new Date(),
-                updatedAt: new Date()
-            });
+            }, { merge: true });
             console.log("✅ Line Decoration created:", docRef.id);
-            return docRef.id;
+            return docRef.id as string;
         } catch (error) {
             console.error("❌ Failed to create line decoration:", error);
             throw error;
@@ -100,6 +100,7 @@ export const LineDecorationService = {
             if (taken) throw new Error(TEMPLATE_NAME_EXISTS);
             const docRef = doc(db, "lineDecoration", template.id);
             await setDoc(docRef, {
+                id: template.id,
                 templateName: template.templateName.trim(),
                 lines: template.lines,
                 updatedAt: new Date()
