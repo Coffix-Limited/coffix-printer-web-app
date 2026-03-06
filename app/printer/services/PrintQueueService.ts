@@ -89,10 +89,12 @@ export const PrintQueueService = {
     }
   },
 
-  async createPrintQueue(printQueue: Omit<PrintQueue, "id" | "jobId">): Promise<void> {
+  async createPrintQueue(
+    printQueue: Omit<PrintQueue, "id" | "jobId">,
+  ): Promise<void> {
     try {
       const cleanedLines = trimTrailingEmptyLines(printQueue.lines);
-      const docRef = doc(db, "printQueue");
+      const docRef = doc(collection(db, "printQueue"));
       const docId = docRef.id;
       await setDoc(docRef, {
         label: printQueue.label ?? "",
