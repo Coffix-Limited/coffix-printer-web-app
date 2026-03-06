@@ -5,4 +5,5 @@ export interface Log {
   message: string;
   printerId?: string;
   serverId?: string;
+  version?: string;
 }

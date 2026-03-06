@@ -31,7 +31,6 @@ export const LogService = {
           } else {
             const logs = snapshot.docs.map((doc) => {
               const data = doc.data();
-              
 
               return {
                 id: doc.id,
@@ -40,6 +39,7 @@ export const LogService = {
                 timestamp: data.timestamp?.toDate() || new Date(),
                 printerId: data.printerId || "",
                 serverId: data.serverId || "",
+                version: data.version || "",
               };
             });
             console.log("✅ Logs loaded:", logs.length);

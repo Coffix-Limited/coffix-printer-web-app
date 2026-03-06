@@ -3,7 +3,7 @@ export enum PrintQueueStatus {
   PROCESSING = "processing",
   COMPLETED = "completed",
   SCHEDULED = "scheduled",
-  ERROR = "error",
+  ERROR = "failed",
 }
 
 export interface PrintQueue {

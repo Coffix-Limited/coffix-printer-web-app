@@ -268,15 +268,15 @@ export default function LogsPage() {
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs opacity-80" style={{ color: COFFEE_PALETTE.background }}>
-                                        {log.id != null && log.id !== "" && (
-                                            <>
-                                                <span className="font-mono">{log.id.substring(0, 8)}</span>
-                                                <span>•</span>
-                                            </>
-                                        )}
                                         {log.printerId != null && log.printerId !== "" && (
                                             <>
                                                 <span title="Printer ID" className="font-mono">Printer: {log.printerId}</span>
+                                                <span>•</span>
+                                            </>
+                                        )}
+                                        {log.version != null && log.version !== "" && (
+                                            <>
+                                                <span title="Version" className="font-mono">{log.version}</span>
                                                 <span>•</span>
                                             </>
                                         )}

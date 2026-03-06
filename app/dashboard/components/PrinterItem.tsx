@@ -20,7 +20,7 @@ export default function PrinterItem({
                     {printer.isOnline ? 'Connected' : 'Disconnected'}
                 </span>
             </div>
-            <p className="text-xs mb-1" style={{ color: COFFEE_PALETTE.textSecondary }}>Location: Auckland</p>
+            <p className="text-xs mb-1" style={{ color: COFFEE_PALETTE.textSecondary }}>Location: {printer.location}</p>
             <p className="text-xs font-medium" style={{ color: COFFEE_PALETTE.textPrimary }}>Jobs: 0</p>
         </div>
     );
