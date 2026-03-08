@@ -280,18 +280,19 @@ export default function LogsPage() {
                                                 <span>•</span>
                                             </>
                                         )}
+                                        {log.label != null && log.label !== "" && (
+                                            <>
+                                                <span title="Label" className="font-mono">Label: {log.label}</span>
+                                                <span>•</span>
+                                            </>
+                                        )}
                                         {log.version != null && log.version !== "" && (
                                             <>
-                                                <span title="Version" className="font-mono">{log.version}</span>
+                                                <span title="Version" className="font-mono">App Ver: {log.version}</span>
                                                 <span>•</span>
                                             </>
                                         )}
-                                        {log.serverId != null && log.serverId !== "" && (
-                                            <>
-                                                <span title="Server ID" className="font-mono">Server: {log.serverId}</span>
-                                                <span>•</span>
-                                            </>
-                                        )}
+
                                         <span>{formatTime(log.timestamp)}</span>
                                         <span>•</span>
                                         <span>{log.timestamp != null ? log.timestamp.toLocaleString() : "—"}</span>

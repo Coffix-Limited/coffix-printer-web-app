@@ -7,4 +7,5 @@ export interface Log {
   serverId?: string;
   version?: string;
   jobId?: string;
+  label?: string;
 }

@@ -41,6 +41,7 @@ export const LogService = {
                 serverId: data.serverId || "",
                 version: data.version || "",
                 jobId: data.jobId || "",
+                label: data.label || "",
               };
             });
             console.log("✅ Logs loaded:", logs.length);
