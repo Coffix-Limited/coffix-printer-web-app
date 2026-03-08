@@ -6,4 +6,5 @@ export interface Log {
   printerId?: string;
   serverId?: string;
   version?: string;
+  jobId?: string;
 }

@@ -40,6 +40,7 @@ export const LogService = {
                 printerId: data.printerId || "",
                 serverId: data.serverId || "",
                 version: data.version || "",
+                jobId: data.jobId || "",
               };
             });
             console.log("✅ Logs loaded:", logs.length);

@@ -268,6 +268,12 @@ export default function LogsPage() {
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs opacity-80" style={{ color: COFFEE_PALETTE.background }}>
+                                        {log.jobId != null && log.jobId !== "" && (
+                                            <>
+                                                <span title="Job ID" className="font-mono">Job ID: {log.jobId}</span>
+                                                <span>•</span>
+                                            </>
+                                        )}
                                         {log.printerId != null && log.printerId !== "" && (
                                             <>
                                                 <span title="Printer ID" className="font-mono">Printer: {log.printerId}</span>
