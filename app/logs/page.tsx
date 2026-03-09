@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { COFFEE_PALETTE } from "../constants/theme";
 import { useLogStore } from "./store/useLogStore";
 import {
@@ -80,6 +80,19 @@ export default function LogsPage() {
             error: logs.filter(l => l.level === 'error').length,
         };
     }, [logs]);
+
+    const [page, setPage] = useState(1);
+    const pageSize = 50;
+    const pageCount = Math.max(1, Math.ceil(filteredLogs.length / pageSize));
+    const currentPage = Math.min(page, pageCount);
+    const currentLogs = filteredLogs.slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize
+    );
+
+    const windowSize = 10;
+    const windowStart = Math.floor((currentPage - 1) / windowSize) * windowSize + 1;
+    const windowEnd = Math.min(windowStart + windowSize - 1, pageCount);
 
     const exportCsv = () => {
         const headers = ["level", "message", "id", "printerId", "serverId", "timestamp"];
@@ -236,72 +249,118 @@ export default function LogsPage() {
                     </p>
                 </div>
             ) : (
-                <div className="space-y-2">
-                    {filteredLogs.map((log: Log) => (
-                        <div
-                            key={log.id}
-                            className="p-4 md:p-5 rounded-lg border hover:shadow-sm transition-shadow"
-                            style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.background }}
-                        >
-                            <div className="flex items-start gap-3">
-                                <div className="shrink-0 mt-0.5">
-                                    {getLogIcon(log.level)}
-                                </div>
-
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-start justify-between gap-2 mb-1">
-                                        <div className="flex-1">
-                                            <p className="text-sm md:text-base font-medium wrap-break-word"
-                                                style={{ color: COFFEE_PALETTE.background }}>
-                                                {log.message}
-                                            </p>
-                                        </div>
-                                        <span
-                                            className="shrink-0 px-2 py-0.5 rounded-full text-xs font-medium capitalize"
-                                            style={{
-                                                backgroundColor: COFFEE_PALETTE.primary + '20',
-                                                color: COFFEE_PALETTE.primary
-                                            }}
-                                        >
-                                            {log.level}
-                                        </span>
+                <>
+                    <div className="space-y-2">
+                        {currentLogs.map((log: Log) => (
+                            <div
+                                key={log.id}
+                                className="p-4 md:p-5 rounded-lg border hover:shadow-sm transition-shadow"
+                                style={{ backgroundColor: COFFEE_PALETTE.cardBg, borderColor: COFFEE_PALETTE.background }}
+                            >
+                                <div className="flex items-start gap-3">
+                                    <div className="shrink-0 mt-0.5">
+                                        {getLogIcon(log.level)}
                                     </div>
 
-                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs opacity-80" style={{ color: COFFEE_PALETTE.background }}>
-                                        {log.jobId != null && log.jobId !== "" && (
-                                            <>
-                                                <span title="Job ID" className="font-mono">Job ID: {log.jobId}</span>
-                                                <span>•</span>
-                                            </>
-                                        )}
-                                        {log.printerId != null && log.printerId !== "" && (
-                                            <>
-                                                <span title="Printer ID" className="font-mono">Printer: {log.printerId}</span>
-                                                <span>•</span>
-                                            </>
-                                        )}
-                                        {log.label != null && log.label !== "" && (
-                                            <>
-                                                <span title="Label" className="font-mono">Label: {log.label}</span>
-                                                <span>•</span>
-                                            </>
-                                        )}
-                                        {log.version != null && log.version !== "" && (
-                                            <>
-                                                <span title="Version" className="font-mono">App Ver: {log.version}</span>
-                                                <span>•</span>
-                                            </>
-                                        )}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-start justify-between gap-2 mb-1">
+                                            <div className="flex-1">
+                                                <p className="text-sm md:text-base font-medium wrap-break-word"
+                                                    style={{ color: COFFEE_PALETTE.background }}>
+                                                    {log.message}
+                                                </p>
+                                            </div>
+                                            <span
+                                                className="shrink-0 px-2 py-0.5 rounded-full text-xs font-medium capitalize"
+                                                style={{
+                                                    backgroundColor: COFFEE_PALETTE.primary + '20',
+                                                    color: COFFEE_PALETTE.primary
+                                                }}
+                                            >
+                                                {log.level}
+                                            </span>
+                                        </div>
 
-                                        <span>{formatTime(log.timestamp)}</span>
-                                        <span>•</span>
-                                        <span>{log.timestamp != null ? log.timestamp.toLocaleString() : "—"}</span>
+                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs opacity-80" style={{ color: COFFEE_PALETTE.background }}>
+                                            {log.jobId != null && log.jobId !== "" && (
+                                                <>
+                                                    <span title="Job ID" className="font-mono">Job ID: {log.jobId}</span>
+                                                    <span>•</span>
+                                                </>
+                                            )}
+                                            {log.printerId != null && log.printerId !== "" && (
+                                                <>
+                                                    <span title="Printer ID" className="font-mono">Printer: {log.printerId}</span>
+                                                    <span>•</span>
+                                                </>
+                                            )}
+                                            {log.label != null && log.label !== "" && (
+                                                <>
+                                                    <span title="Label" className="font-mono">Label: {log.label}</span>
+                                                    <span>•</span>
+                                                </>
+                                            )}
+                                            {log.version != null && log.version !== "" && (
+                                                <>
+                                                    <span title="Version" className="font-mono">App Ver: {log.version}</span>
+                                                    <span>•</span>
+                                                </>
+                                            )}
+
+                                            <span>{formatTime(log.timestamp)}</span>
+                                            <span>•</span>
+                                            <span>{log.timestamp != null ? log.timestamp.toLocaleString() : "—"}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                {pageCount > 1 && (
+                    <div className="flex flex-wrap justify-center items-center mt-4 gap-2 px-4">
+                        {windowStart > 1 && (
+                            <button
+                                onClick={() => setPage(windowStart - 1)}
+                                className="min-w-8 px-3 py-1 rounded-md text-xs font-medium"
+                                style={{
+                                    backgroundColor: "transparent",
+                                    color: COFFEE_PALETTE.cardBg,
+                                    border: `1px solid ${COFFEE_PALETTE.cardBg + "33"}`,
+                                }}
+                            >
+                                ‹
+                            </button>
+                        )}
+                        {Array.from({ length: windowEnd - windowStart + 1 }, (_, i) => windowStart + i).map((p) => (
+                            <button
+                                key={p}
+                                onClick={() => setPage(p)}
+                                className="min-w-8 px-3 py-1 rounded-md text-xs font-medium"
+                                style={{
+                                    backgroundColor: p === currentPage ? COFFEE_PALETTE.primary : "transparent",
+                                    color: COFFEE_PALETTE.cardBg,
+                                    border: `1px solid ${p === currentPage ? COFFEE_PALETTE.primary : COFFEE_PALETTE.cardBg + "33"}`,
+                                }}
+                            >
+                                {p}
+                            </button>
+                        ))}
+                        {windowEnd < pageCount && (
+                            <button
+                                onClick={() => setPage(windowEnd + 1)}
+                                className="min-w-8 px-3 py-1 rounded-md text-xs font-medium"
+                                style={{
+                                    backgroundColor: "transparent",
+                                    color: COFFEE_PALETTE.cardBg,
+                                    border: `1px solid ${COFFEE_PALETTE.cardBg + "33"}`,
+                                }}
+                            >
+                                ›
+                            </button>
+                        )}
+                    </div>
+                )}
+                </>
             )}
         </main>
     );

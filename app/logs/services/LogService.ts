@@ -12,14 +12,12 @@ export const LogService = {
   subscribeToLogs(
     callback: (logs: Log[]) => void,
     errorCallback?: (error: Error) => void,
-    maxLogs: number = 50,
   ): () => void {
     try {
       const collectionRef = collection(db, "logs");
       const q = query(
         collectionRef,
         orderBy("timestamp", "desc"),
-        limit(maxLogs),
       );
 
       const unsubscribe = onSnapshot(

@@ -41,3 +41,52 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+
+/* rc-pagination coffee theme overrides */
+.rc-pagination-item {
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+}
+.rc-pagination-item a {
+  color: #FFFFFF;
+}
+.rc-pagination-item:hover {
+  border-color: #F15F2C;
+}
+.rc-pagination-item:hover a {
+  color: #F15F2C;
+}
+.rc-pagination-item-active {
+  background-color: #F15F2C;
+  border-color: #F15F2C;
+}
+.rc-pagination-item-active a,
+.rc-pagination-item-active:hover a {
+  color: #FFFFFF;
+}
+.rc-pagination-prev .rc-pagination-item-link,
+.rc-pagination-next .rc-pagination-item-link {
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #FFFFFF;
+}
+.rc-pagination-prev:hover .rc-pagination-item-link,
+.rc-pagination-next:hover .rc-pagination-item-link {
+  border-color: #F15F2C;
+  color: #F15F2C;
+}
+.rc-pagination-disabled .rc-pagination-item-link,
+.rc-pagination-disabled:hover .rc-pagination-item-link {
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+}
+.rc-pagination-jump-prev button,
+.rc-pagination-jump-next button {
+  color: rgba(255, 255, 255, 0.6);
+}
+.rc-pagination-jump-prev:hover button,
+.rc-pagination-jump-next:hover button {
+  color: #F15F2C;
+}
