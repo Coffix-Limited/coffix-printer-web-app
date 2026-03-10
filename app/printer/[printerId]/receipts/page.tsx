@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { usePrintQueueStore } from "../../store/usePrintQueueStore";
 import { PrintQueue, PrintQueueStatus } from "../../interface/PrintQueue";
 import { COFFEE_PALETTE } from "@/app/constants/theme";
-import { ArrowLeft, Plus, Save, X } from "lucide-react";
+import { ArrowLeft, ArrowUpDown, Plus, Save, X } from "lucide-react";
 import ReceiptCard from "./components/ReceiptCard";
 import { SAMPLE_LINES } from "@/app/templates/constants";
 import { usePrinterStore } from "../../store/usePrinterStore";
@@ -38,6 +38,7 @@ export default function ReceiptsPage() {
     const { printers, setPrinters } = usePrinterStore();
     const { lineDecorations, setLineDecorations } = useTemplateStore();
 
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [editingId, setEditingId] = useState<string | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [statusFilter, setStatusFilter] = useState<PrintQueueStatus | 'ALL'>('ALL');
@@ -60,7 +61,11 @@ export default function ReceiptsPage() {
         ? printQueue
         : printQueue.filter(q => q.status === statusFilter);
 
-    const displayQueue = filteredQueue.slice(0, 15);
+    const sortedQueue = [...filteredQueue].sort((a, b) => {
+        const diff = Number(a.jobId) - Number(b.jobId);
+        return sortOrder === 'asc' ? diff : -diff;
+    });
+    const displayQueue = sortedQueue.slice(0, 15);
 
     const handleCreate = async () => {
         try {
@@ -407,6 +412,17 @@ export default function ReceiptsPage() {
                     </div>
                 </div>
             )}
+
+            <div className="flex items-center gap-2 mb-4">
+                <button
+                    onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                    className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-1"
+                    style={{ backgroundColor: COFFEE_PALETTE.cardBg, color: COFFEE_PALETTE.background }}
+                >
+                    <ArrowUpDown className="w-4 h-4" />
+                    Job ID {sortOrder === 'asc' ? '↑' : '↓'}
+                </button>
+            </div>
 
             <div className="space-y-4">
                 {displayQueue.length === 0 && !loading && (

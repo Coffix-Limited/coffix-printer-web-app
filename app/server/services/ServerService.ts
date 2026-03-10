@@ -1,4 +1,4 @@
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, where } from "firebase/firestore";
 import { db } from "@/app/utils/firebase.browser";
 import { PosServer } from "../interface/Server";
 
@@ -10,7 +10,13 @@ export const ServerService = {
     try {
       const collectionRef = collection(db, "server");
 
-      const q = query(collectionRef, orderBy("connectedAt", "desc"));
+      // const q = query(collectionRef, orderBy("connectedAt", "desc"));
+      const q = query(
+        collectionRef,
+        where("printerId", "==", "TRY"),
+        where("printerConnected", "==", true),
+        orderBy("connectedAt", "desc"),
+      );
       const unsubscribe = onSnapshot(
         q,
         (snapshot) => {

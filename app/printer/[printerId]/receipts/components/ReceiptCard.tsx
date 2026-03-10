@@ -184,30 +184,27 @@ export default function ReceiptCard({
                 <>
                     <div className="flex items-start justify-between gap-2 mb-4">
                         <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2 min-w-0">
-                                <span
-                                    className="shrink-0 px-3 py-1 rounded-full text-xs font-semibold"
-                                    style={{
-                                        backgroundColor: getStatusColor(queue.status) + '20',
-                                        color: getStatusColor(queue.status)
-                                    }}
-                                >
-                                    {queue.status}
-                                </span>
-                                <span className="text-xs font-semibold truncate min-w-0 max-w-[100px] sm:max-w-[140px]" style={{ color: COFFEE_PALETTE.primary }} title={`Job #${queue.jobId}`}>
-                                    Job #{queue.jobId}
-                                </span>
-                                {queue.label ? (
-                                    <span className="text-xs truncate shrink min-w-0 max-w-[80px] sm:max-w-[120px]" style={{ color: COFFEE_PALETTE.background }} title={queue.label}>
-                                        {queue.label}
-                                    </span>
-                                ) : null}
-                                <span className="text-xs font-mono shrink-0 opacity-70" style={{ color: COFFEE_PALETTE.background }}>
-                                    {queue.printerId}
-                                </span>
+                            <div className="grid grid-cols-2 gap-2 mb-2">
+                                <div>
+                                    <p className="text-xs font-semibold uppercase opacity-70 mb-0.5" style={{ color: COFFEE_PALETTE.background }}>Job ID</p>
+                                    <p className="text-sm font-semibold" style={{ color: COFFEE_PALETTE.primary }}>#{queue.jobId}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-semibold uppercase opacity-70 mb-0.5" style={{ color: COFFEE_PALETTE.background }}>Label</p>
+                                    <p className="text-sm truncate" style={{ color: COFFEE_PALETTE.background }}>{queue.label || '—'}</p>
+                                </div>
                             </div>
+                            <span
+                                className="shrink-0 px-3 py-1 rounded-full text-xs font-semibold"
+                                style={{
+                                    backgroundColor: getStatusColor(queue.status) + '20',
+                                    color: getStatusColor(queue.status)
+                                }}
+                            >
+                                {queue.status}
+                            </span>
                             {queue.printTime && (
-                                <p className="text-xs opacity-70" style={{ color: COFFEE_PALETTE.background }}>
+                                <p className="text-xs opacity-70 mt-1" style={{ color: COFFEE_PALETTE.background }}>
                                     Print at: {new Date(queue.printTime).toLocaleString()}
                                 </p>
                             )}
