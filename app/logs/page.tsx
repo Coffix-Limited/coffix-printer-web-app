@@ -16,6 +16,7 @@ import {
     Download
 } from "lucide-react";
 import { Log } from "./interface/Log";
+import { dateFormat } from "../utils/dateformat";
 
 export default function LogsPage() {
     const { logs, setLogs, loading, error, filterLevel, searchQuery, setFilterLevel, setSearchQuery } = useLogStore();
@@ -107,7 +108,7 @@ export default function LogsPage() {
             escape(log.id ?? ""),
             escape(log.printerId ?? ""),
             escape(log.serverId ?? ""),
-            escape(log.timestamp != null ? (log.timestamp instanceof Date ? log.timestamp : new Date(log.timestamp)).toISOString() : ""),
+            escape(log.timestamp != null ? dateFormat(log.timestamp) : ""),
         ]);
         const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
         const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -316,50 +317,50 @@ export default function LogsPage() {
                             </div>
                         ))}
                     </div>
-                {pageCount > 1 && (
-                    <div className="flex flex-wrap justify-center items-center mt-4 gap-2 px-4">
-                        {windowStart > 1 && (
-                            <button
-                                onClick={() => setPage(windowStart - 1)}
-                                className="min-w-8 px-3 py-1 rounded-md text-xs font-medium"
-                                style={{
-                                    backgroundColor: "transparent",
-                                    color: COFFEE_PALETTE.cardBg,
-                                    border: `1px solid ${COFFEE_PALETTE.cardBg + "33"}`,
-                                }}
-                            >
-                                ‹
-                            </button>
-                        )}
-                        {Array.from({ length: windowEnd - windowStart + 1 }, (_, i) => windowStart + i).map((p) => (
-                            <button
-                                key={p}
-                                onClick={() => setPage(p)}
-                                className="min-w-8 px-3 py-1 rounded-md text-xs font-medium"
-                                style={{
-                                    backgroundColor: p === currentPage ? COFFEE_PALETTE.primary : "transparent",
-                                    color: COFFEE_PALETTE.cardBg,
-                                    border: `1px solid ${p === currentPage ? COFFEE_PALETTE.primary : COFFEE_PALETTE.cardBg + "33"}`,
-                                }}
-                            >
-                                {p}
-                            </button>
-                        ))}
-                        {windowEnd < pageCount && (
-                            <button
-                                onClick={() => setPage(windowEnd + 1)}
-                                className="min-w-8 px-3 py-1 rounded-md text-xs font-medium"
-                                style={{
-                                    backgroundColor: "transparent",
-                                    color: COFFEE_PALETTE.cardBg,
-                                    border: `1px solid ${COFFEE_PALETTE.cardBg + "33"}`,
-                                }}
-                            >
-                                ›
-                            </button>
-                        )}
-                    </div>
-                )}
+                    {pageCount > 1 && (
+                        <div className="flex flex-wrap justify-center items-center mt-4 gap-2 px-4">
+                            {windowStart > 1 && (
+                                <button
+                                    onClick={() => setPage(windowStart - 1)}
+                                    className="min-w-8 px-3 py-1 rounded-md text-xs font-medium"
+                                    style={{
+                                        backgroundColor: "transparent",
+                                        color: COFFEE_PALETTE.cardBg,
+                                        border: `1px solid ${COFFEE_PALETTE.cardBg + "33"}`,
+                                    }}
+                                >
+                                    ‹
+                                </button>
+                            )}
+                            {Array.from({ length: windowEnd - windowStart + 1 }, (_, i) => windowStart + i).map((p) => (
+                                <button
+                                    key={p}
+                                    onClick={() => setPage(p)}
+                                    className="min-w-8 px-3 py-1 rounded-md text-xs font-medium"
+                                    style={{
+                                        backgroundColor: p === currentPage ? COFFEE_PALETTE.primary : "transparent",
+                                        color: COFFEE_PALETTE.cardBg,
+                                        border: `1px solid ${p === currentPage ? COFFEE_PALETTE.primary : COFFEE_PALETTE.cardBg + "33"}`,
+                                    }}
+                                >
+                                    {p}
+                                </button>
+                            ))}
+                            {windowEnd < pageCount && (
+                                <button
+                                    onClick={() => setPage(windowEnd + 1)}
+                                    className="min-w-8 px-3 py-1 rounded-md text-xs font-medium"
+                                    style={{
+                                        backgroundColor: "transparent",
+                                        color: COFFEE_PALETTE.cardBg,
+                                        border: `1px solid ${COFFEE_PALETTE.cardBg + "33"}`,
+                                    }}
+                                >
+                                    ›
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </>
             )}
         </main>

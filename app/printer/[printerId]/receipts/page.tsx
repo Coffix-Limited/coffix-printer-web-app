@@ -11,6 +11,7 @@ import { SAMPLE_LINES } from "@/app/templates/constants";
 import { usePrinterStore } from "../../store/usePrinterStore";
 import type { Printer } from "../../interface/Printer";
 import { useTemplateStore } from "@/app/templates/store/useTemplateStore";
+import { dateFormat } from "@/app/utils/dateformat";
 
 const PRINT_TIME_OPTIONS = [
     { label: "Now", minutes: 0 },
@@ -336,7 +337,7 @@ export default function ReceiptsPage() {
                                 })}
                             </div>
                             <p className="text-xs mt-1 opacity-70" style={{ color: COFFEE_PALETTE.background }}>
-                                Print at: {formData.printTime.toLocaleString()}
+                                Print at: {dateFormat(formData.printTime)}
                             </p>
                         </div>
                         <div>
