@@ -257,7 +257,6 @@ export default function PrinterPage() {
 
                   {expandedPrinter === printer.id && (
                     <div className="p-4 rounded-lg border" style={{
-                      backgroundColor: COFFEE_PALETTE.background,
                       borderColor: COFFEE_PALETTE.border
                     }}>
                       <div className="flex justify-center mb-3">

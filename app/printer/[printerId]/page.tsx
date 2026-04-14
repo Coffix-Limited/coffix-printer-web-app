@@ -402,17 +402,13 @@ export default function PrinterDetailsPage() {
                     </h3>
 
                     <div className="flex justify-center mb-4">
-                        <div className="p-4 rounded-lg border" style={{
-                            backgroundColor: COFFEE_PALETTE.background,
-                            borderColor: COFFEE_PALETTE.border
-                        }}>
+                       
                             <QRCodeReact
                                 id={`qr-code-${selectedPrinter?.id || ""}`}
                                 value={qrCode}
                                 size={200}
                                 level="H"
                             />
-                        </div>
                     </div>
 
                     <div className="mb-4">
