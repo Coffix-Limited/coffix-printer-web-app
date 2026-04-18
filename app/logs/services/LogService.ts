@@ -4,6 +4,8 @@ import {
   query,
   orderBy,
   limit,
+  addDoc,
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "@/app/utils/firebase.browser";
 import { Log } from "../interface/Log";
@@ -15,10 +17,7 @@ export const LogService = {
   ): () => void {
     try {
       const collectionRef = collection(db, "logs");
-      const q = query(
-        collectionRef,
-        orderBy("timestamp", "desc"),
-      );
+      const q = query(collectionRef, orderBy("timestamp", "desc"));
 
       const unsubscribe = onSnapshot(
         q,
@@ -66,5 +65,13 @@ export const LogService = {
       }
       return () => {};
     }
+  },
+
+  async createLog(log: Omit<Log, "id">): Promise<void> {
+    const collectionRef = collection(db, "logs");
+    await addDoc(collectionRef, {
+      ...log,
+      timestamp: Timestamp.fromDate(log.timestamp),
+    });
   },
 };

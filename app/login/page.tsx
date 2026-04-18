@@ -6,6 +6,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { getAuth } from "firebase/auth";
 import { app } from "../utils/firebase.browser";
 import { COFFEE_PALETTE } from "../constants/theme";
+import { LogService } from "../logs/services/LogService";
 import { Mail, Lock, LogIn, AlertCircle, Coffee } from "lucide-react";
 
 export default function LoginPage() {
@@ -23,6 +24,12 @@ export default function LoginPage() {
         try {
             const auth = getAuth(app);
             await signInWithEmailAndPassword(auth, email, password);
+            await LogService.createLog({
+                level: "info",
+                message: `User signed in: ${email}`,
+                timestamp: new Date(),
+                label: "auth",
+            });
             router.push("/");
         } catch (err: unknown) {
             console.error("Login error:", err);
