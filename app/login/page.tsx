@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { getAuth } from "firebase/auth";
 import { app } from "../utils/firebase.browser";
@@ -168,6 +169,16 @@ export default function LoginPage() {
                                     }}
                                 />
                             </div>
+                        </div>
+
+                        <div className="flex justify-end">
+                            <Link
+                                href="/forgot-password"
+                                className="text-sm hover:underline"
+                                style={{ color: COFFEE_PALETTE.primary }}
+                            >
+                                Forgot password?
+                            </Link>
                         </div>
 
                         <button

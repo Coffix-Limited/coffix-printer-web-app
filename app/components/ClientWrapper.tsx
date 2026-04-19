@@ -15,6 +15,7 @@ const ClientWrapper: React.FC<Props> = ({ children }) => {
     const router = useRouter()
     const pathname = usePathname()
     const isLoginPage = pathname === "/login"
+    const isPublicPage = isLoginPage || pathname === "/forgot-password"
 
     useEffect(() => {
         return subscribe()
@@ -22,9 +23,9 @@ const ClientWrapper: React.FC<Props> = ({ children }) => {
 
     useEffect(() => {
         if (user === undefined) return
-        if (!user && !isLoginPage) router.replace("/login")
+        if (!user && !isPublicPage) router.replace("/login")
         if (user && isLoginPage) router.replace("/")
-    }, [user, isLoginPage, router])
+    }, [user, isPublicPage, isLoginPage, router])
 
     if (user === undefined) {
         return (
@@ -33,10 +34,10 @@ const ClientWrapper: React.FC<Props> = ({ children }) => {
             </div>
         )
     }
-    if (!user && !isLoginPage) return null
+    if (!user && !isPublicPage) return null
     if (user && isLoginPage) return null
 
-    if (isLoginPage) return <>{children}</>
+    if (isPublicPage) return <>{children}</>
 
     return (
         <div className="min-h-screen flex flex-col md:flex-row" style={{ backgroundColor: COFFEE_PALETTE.background }}>
