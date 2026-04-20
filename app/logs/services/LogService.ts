@@ -3,7 +3,6 @@ import {
   onSnapshot,
   query,
   orderBy,
-  limit,
   addDoc,
   Timestamp,
 } from "firebase/firestore";
@@ -67,11 +66,11 @@ export const LogService = {
     }
   },
 
-  async createLog(log: Omit<Log, "id">): Promise<void> {
+  async createLog(log: Omit<Log, "id" | "timestamp">): Promise<void> {
     const collectionRef = collection(db, "logs");
     await addDoc(collectionRef, {
       ...log,
-      timestamp: Timestamp.fromDate(log.timestamp),
+      timestamp: Timestamp.now(),
     });
   },
 };

@@ -16,3 +16,6 @@ export const dateFormat = (date: Date): string => {
   return `${dd}/${mm}/${yyyy} ${hh}:${minutes}:${seconds} ${ampm}.`;
 };
 
+export const nzTime = new Date(
+  new Date().toLocaleString("en-US", { timeZone: "Pacific/Auckland" })
+).toISOString();

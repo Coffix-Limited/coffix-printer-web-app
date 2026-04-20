@@ -28,7 +28,6 @@ export default function LoginPage() {
             await LogService.createLog({
                 level: "info",
                 message: `User signed in: ${email}`,
-                timestamp: new Date(),
                 label: "auth",
             });
             router.push("/");
