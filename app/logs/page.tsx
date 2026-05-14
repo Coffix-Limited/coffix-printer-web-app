@@ -43,17 +43,28 @@ export default function LogsPage() {
         });
     }, [logs, filterLevel, searchQuery]);
 
+    const getLogColors = (level: string): { bg: string; text: string } => {
+        switch (level.toLowerCase()) {
+            case 'error':   return { bg: COFFEE_PALETTE.error + '20',   text: COFFEE_PALETTE.error };
+            case 'warning': return { bg: COFFEE_PALETTE.warning + '20', text: COFFEE_PALETTE.warning };
+            case 'success': return { bg: COFFEE_PALETTE.success + '20', text: COFFEE_PALETTE.success };
+            case 'info':
+            default:        return { bg: '#1565C020',                   text: '#1565C0' };
+        }
+    };
+
     const getLogIcon = (level: string) => {
+        const { text } = getLogColors(level);
         switch (level.toLowerCase()) {
             case 'error':
-                return <AlertCircle className="w-4 h-4" style={{ color: COFFEE_PALETTE.primary }} />;
+                return <AlertCircle className="w-4 h-4" style={{ color: text }} />;
             case 'warning':
-                return <AlertTriangle className="w-4 h-4" style={{ color: COFFEE_PALETTE.primary }} />;
+                return <AlertTriangle className="w-4 h-4" style={{ color: text }} />;
             case 'success':
-                return <CheckCircle className="w-4 h-4" style={{ color: COFFEE_PALETTE.primary }} />;
+                return <CheckCircle className="w-4 h-4" style={{ color: text }} />;
             case 'info':
             default:
-                return <Info className="w-4 h-4" style={{ color: COFFEE_PALETTE.primary }} />;
+                return <Info className="w-4 h-4" style={{ color: text }} />;
         }
     };
 
@@ -240,7 +251,9 @@ export default function LogsPage() {
             ) : (
                 <>
                     <div className="space-y-2">
-                        {currentLogs.map((log: Log) => (
+                        {currentLogs.map((log: Log) => {
+                            const logColors = getLogColors(log.level);
+                            return (
                             <div
                                 key={log.id}
                                 className="p-4 md:p-5 rounded-lg border hover:shadow-sm transition-shadow"
@@ -262,8 +275,8 @@ export default function LogsPage() {
                                             <span
                                                 className="shrink-0 px-2 py-0.5 rounded-full text-xs font-medium capitalize"
                                                 style={{
-                                                    backgroundColor: COFFEE_PALETTE.primary + '20',
-                                                    color: COFFEE_PALETTE.primary
+                                                    backgroundColor: logColors.bg,
+                                                    color: logColors.text
                                                 }}
                                             >
                                                 {log.level}
@@ -301,7 +314,8 @@ export default function LogsPage() {
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                        );
+                        })}
                     </div>
                     {pageCount > 1 && (
                         <div className="flex flex-wrap justify-center items-center mt-4 gap-2 px-4">

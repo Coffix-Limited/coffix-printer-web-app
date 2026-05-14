@@ -22,6 +22,7 @@ const NAV_ITEMS: NavItem[] = [
   { name: "Templates", href: "/templates" },
   // { name: "Setup", href: "/setup" },
   { name: "Users", href: "/users" },
+  { name: "Settings", href: "/settings" },
 ];
 
 export default function SideBar() {

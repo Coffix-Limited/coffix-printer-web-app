@@ -67,7 +67,7 @@ export default function PrinterPage() {
 
   const handleCopyUrl = (url: string) => {
     navigator.clipboard.writeText(url);
-    setCopyMessage("URL copied!");
+    setCopyMessage("Code copied!");
     setTimeout(() => setCopyMessage(""), 2000);
   };
 
@@ -167,7 +167,7 @@ export default function PrinterPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {filteredPrinters.map((printer: Printer) => {
-            const qrCode = `https://coffix.co.nz?printerId=${printer.id}&templateName=${printer.templateName}`;
+            const coffixCode = printer.uniqueCode ?? "";
             const isVisible = printer.isVisible ?? true;
             return (
               <div
@@ -260,18 +260,26 @@ export default function PrinterPage() {
                       borderColor: COFFEE_PALETTE.border
                     }}>
                       <div className="flex justify-center mb-3">
-                        <QRCodeReact
-                          id={`qr-code-${printer.id}`}
-                          value={qrCode}
-                          size={150}
-                          level="H"
-                        />
+                        {coffixCode ? (
+                          <QRCodeReact
+                            id={`qr-code-${printer.id}`}
+                            value={coffixCode}
+                            size={150}
+                            level="H"
+                          />
+                        ) : (
+                          <div className="w-[150px] h-[150px] flex items-center justify-center rounded border-2 border-dashed text-xs text-center px-2"
+                            style={{ borderColor: COFFEE_PALETTE.border, color: COFFEE_PALETTE.textSecondary }}>
+                            No unique code assigned
+                          </div>
+                        )}
                       </div>
 
                       <div className="space-y-2">
                         <button
-                          onClick={() => handleCopyUrl(qrCode)}
-                          className="w-full py-2 px-3 rounded-md text-xs font-medium border transition-opacity hover:opacity-90 flex items-center justify-center gap-1"
+                          onClick={() => handleCopyUrl(coffixCode)}
+                          disabled={!coffixCode}
+                          className="w-full py-2 px-3 rounded-md text-xs font-medium border transition-opacity hover:opacity-90 flex items-center justify-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
                           style={{
                             borderColor: COFFEE_PALETTE.primary,
                             color: COFFEE_PALETTE.primary,
@@ -279,7 +287,7 @@ export default function PrinterPage() {
                           }}
                         >
                           <Copy size={12} />
-                          Copy Coffix URL
+                          Copy Coffix Code
                         </button>
 
                         <button

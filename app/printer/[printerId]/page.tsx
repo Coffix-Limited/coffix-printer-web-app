@@ -107,7 +107,7 @@ export default function PrinterDetailsPage() {
 
     const handleCopyUrl = (url: string) => {
         navigator.clipboard.writeText(url);
-        setCopyMessage("URL copied!");
+        setCopyMessage("Code copied!");
         setTimeout(() => setCopyMessage(""), 2000);
     };
 
@@ -156,7 +156,7 @@ export default function PrinterDetailsPage() {
         );
     }
 
-    const qrCode = `https://coffix.co.nz?printerId=${selectedPrinter.id}&templateName=${selectedPrinter.templateName}`;
+    const coffixCode = selectedPrinter.uniqueCode ?? "";
     const selectedTemplate = lineDecorations.find(t => t.templateName === selectedPrinter.templateName);
 
     return (
@@ -402,27 +402,34 @@ export default function PrinterDetailsPage() {
                     </h3>
 
                     <div className="flex justify-center mb-4">
-                       
+                        {coffixCode ? (
                             <QRCodeReact
                                 id={`qr-code-${selectedPrinter?.id || ""}`}
-                                value={qrCode}
+                                value={coffixCode}
                                 size={200}
                                 level="H"
                             />
+                        ) : (
+                            <div className="w-[200px] h-[200px] flex items-center justify-center rounded border-2 border-dashed text-sm text-center px-4"
+                                style={{ borderColor: COFFEE_PALETTE.border, color: COFFEE_PALETTE.textSecondary }}>
+                                No unique code assigned
+                            </div>
+                        )}
                     </div>
 
                     <div className="mb-4">
                         <label className="text-xs font-semibold uppercase mb-2 block" style={{ color: COFFEE_PALETTE.textSecondary }}>
-                            Connection URL
+                            Coffix Code
                         </label>
                         <div className="flex text-white items-center gap-2 p-3 rounded-md border font-mono text-sm break-all" style={{
                             backgroundColor: COFFEE_PALETTE.background,
                             borderColor: COFFEE_PALETTE.border,
                         }}>
-                            <span className="flex-1">{qrCode}</span>
+                            <span className="flex-1">{coffixCode || <span style={{ color: COFFEE_PALETTE.textSecondary, fontStyle: "italic" }}>No unique code assigned</span>}</span>
                             <button
-                                onClick={() => handleCopyUrl(qrCode)}
-                                className="bg-white p-2 rounded-md transition-opacity hover:opacity-80 shrink-0"
+                                onClick={() => handleCopyUrl(coffixCode)}
+                                disabled={!coffixCode}
+                                className="bg-white p-2 rounded-md transition-opacity hover:opacity-80 shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                                 <Copy className="w-4 h-4" style={{ color: COFFEE_PALETTE.primary }} />
                             </button>
@@ -431,8 +438,9 @@ export default function PrinterDetailsPage() {
 
                     <div className="flex gap-2">
                         <button
-                            onClick={() => handleCopyUrl(qrCode)}
-                            className="flex-1 py-2 px-3 rounded-md text-sm font-medium border transition-opacity hover:opacity-90 flex items-center justify-center gap-2"
+                            onClick={() => handleCopyUrl(coffixCode)}
+                            disabled={!coffixCode}
+                            className="flex-1 py-2 px-3 rounded-md text-sm font-medium border transition-opacity hover:opacity-90 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                             style={{
                                 borderColor: COFFEE_PALETTE.primary,
                                 color: COFFEE_PALETTE.primary,
@@ -440,7 +448,7 @@ export default function PrinterDetailsPage() {
                             }}
                         >
                             <Copy size={14} />
-                            Copy URL
+                            Copy Code
                         </button>
                         <button
                             onClick={handleDownloadQR}

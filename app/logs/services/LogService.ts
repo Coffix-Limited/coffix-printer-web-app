@@ -3,6 +3,7 @@ import {
   onSnapshot,
   query,
   orderBy,
+  limit,
   addDoc,
   Timestamp,
 } from "firebase/firestore";
@@ -16,7 +17,7 @@ export const LogService = {
   ): () => void {
     try {
       const collectionRef = collection(db, "logs");
-      const q = query(collectionRef, orderBy("timestamp", "desc"));
+      const q = query(collectionRef, orderBy("timestamp", "desc"), limit(500));
 
       const unsubscribe = onSnapshot(
         q,

@@ -48,11 +48,6 @@ export default function DashboardPage() {
                 <div className="flex flex-wrap items-center gap-2 text-sm text-white">
                     <span>Real-time monitoring of all printer nodes</span>
                     {loading && <span className="animate-pulse text-xs italic">⏳ Loading...</span>}
-                    {!loading && printers.length > 0 && (
-                        <span className="bg-white px-2 py-0.5 rounded-full text-xs text-black">
-                            {printers.length} connected
-                        </span>
-                    )}
                 </div>
             </div>
 

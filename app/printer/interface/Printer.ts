@@ -13,4 +13,6 @@ export interface Printer {
   templateName: string;
   createdAt: Date;
   isVisible: boolean;
+  uniqueCode?: string;
+  
 }
