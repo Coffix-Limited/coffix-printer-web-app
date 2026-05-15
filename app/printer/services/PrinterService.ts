@@ -15,6 +15,24 @@ import { db } from "@/app/utils/firebase.browser";
 import { Printer } from "../interface/Printer";
 import { DEFAULT_TEMPLATE_NAME } from "@/app/constants/constant";
 
+const CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+async function generateUniqueCode(): Promise<string> {
+  const snapshot = await getDocs(collection(db, "printer"));
+  const existing = new Set(
+    snapshot.docs.map((d) => d.data().uniqueCode).filter(Boolean),
+  );
+
+  let code: string;
+  do {
+    code = Array.from({ length: 8 }, () =>
+      CHARSET[Math.floor(Math.random() * CHARSET.length)],
+    ).join("");
+  } while (existing.has(code));
+
+  return code;
+}
+
 export const PrinterService = {
   subscribeToPrinters(
     callback: (printer: Printer[]) => void,
@@ -81,12 +99,14 @@ export const PrinterService = {
       if (!snapshot.empty) {
         throw new Error(`Printer "${printerId.trim()}" already exists`);
       }
+      const uniqueCode = await generateUniqueCode();
       const newPrinter = {
         id: printerId.trim().toUpperCase(),
         location,
         isOnline: false,
         templateName: DEFAULT_TEMPLATE_NAME,
         isVisible: true,
+        uniqueCode,
         createdAt: serverTimestamp(),
       };
 
@@ -99,6 +119,7 @@ export const PrinterService = {
           isOnline: newPrinter.isOnline,
           templateName: newPrinter.templateName,
           isVisible: newPrinter.isVisible,
+          uniqueCode: newPrinter.uniqueCode,
           createdAt: newPrinter.createdAt,
         },
         { merge: true },
