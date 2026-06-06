@@ -34,11 +34,15 @@ export default function LogsPage() {
             const id = (log.id ?? "").toLowerCase();
             const printerId = (log.printerId ?? "").toLowerCase();
             const serverId = (log.serverId ?? "").toLowerCase();
+            const jobId = (log.jobId ?? "").toLowerCase();
+            const label = (log.label ?? "").toLowerCase();
             const matchesSearch =
                 message.includes(q) ||
                 id.includes(q) ||
                 printerId.includes(q) ||
-                serverId.includes(q);
+                serverId.includes(q) ||
+                jobId.includes(q) ||
+                label.includes(q);
             return matchesLevel && matchesSearch;
         });
     }, [logs, filterLevel, searchQuery]);
@@ -163,7 +167,7 @@ export default function LogsPage() {
                             style={{ color: COFFEE_PALETTE.background }} />
                         <input
                             type="text"
-                            placeholder="Search by id, message, printerId, serverId..."
+                            placeholder="Search by job ID, label, message, printer ID..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-10 py-2 rounded-md border focus:outline-none focus:ring-2"
